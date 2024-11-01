@@ -1,0 +1,164 @@
+/*#!name = 同程去广告
+#!desc = 同程去广告@派大星
+#!openUrl = 
+#!author = 派大星
+#!tag = 去广告
+#!system = 
+#!system_version = 
+#!loon_version = 3.2.1(745)
+#!homepage = 
+#!icon = https://raw.githubusercontent.com/johnmillzer/Icon/main/plugin/tongcheng.png
+#!date = 2024-11-02 07:23:05
+
+
+[Rule]
+#
+
+[Rewrite]
+
+#火车票下方候补预测
+^https:\/\/wx\.17u\.cn\/trainbffapi\/getConfiguration -url reject-dict
+
+# 机票值机选座
+^https:\/\/wx\.17u\.cn\/flightbffv2\/homen2one\/configs url reject-dict
+
+# 同程旅行 火车票机界面小时达
+^https:\/\/wx\.17u\.cn\/trainbffapi\/trainHourSearchConfig url reject-dict
+
+# 查询火车票 免费光速抢
+^https:\/\/wx\.17u\.cn\/trainbffapi\/queryHomePageBtnUrl url reject-dict
+
+# 搜索热门城市推荐
+^https:\/\/wx\.17u\.cn\/trainbffapi\/searchHotCity url reject-dict
+
+# 景点搜索热门地
+^https:\/\/m\.ly\.com\/wlfrontend\/wxapi\/smallprogsceneryhotsearchhterm url reject-dict
+
+# 行程净化
+^https:\/\/tcmobileapi\.17usoft\.com\/apptravelassistant\/travel\/list url reject-dict
+
+# 去旅行界面大清洗，建议别用
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/travel\/init url reject-dict
+
+# 去旅行 经典线路
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/newCityPage\/linePlay url reject-dict
+
+# 去旅行 城市轮播图
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/cityPage\/init url reject-dict
+
+# 去旅行 本地演出
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/newCityPage\/performanceTicket url reject-dict
+
+# 去旅行 逛吃攻略
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/newCityPage\/foodStrategy url reject-dict
+
+# 去旅行 品牌馆
+^https:\/\/cvg\.17usoft\.com\/themeactivity\/api\/travelNote\/getBrandHall url reject-dict
+
+# 去旅行 看看别人怎么玩
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/travelNote\/publishListV2 url reject-dict
+
+# 去旅行 住宿推荐
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/newCityPage\/hotelRecommendation url reject-dict
+
+# 去旅行 度假必玩
+^https:\/\/tcmobileapi\.17usoft\.com\/content\/h5\/cityPage\/journey url reject-dict
+
+# 单单返 横幅轮播图
+^https:\/\/app\.17u\.cn\/stardewvalley\/resource\/banner\/list\?activityCode=fuhentekina_withdraw&banner url reject-dict
+
+# 旅游界面 甄选线路
+^https:\/\/m\.ly\.com\/vacation\/webapp\/home\/handpick url reject-dict
+
+# 景点界面
+^https:\/\/m\.ly\.com\/journey\/list\/getRecommendList url reject-dict
+
+# 单单返 用券下单额外返现
+^https:\/\/app\.17u\.cn\/stardewvalley\/mixresource\/all url reject-dict
+
+# 行程 精选线路
+^https:\/\/tcmobileapi\.17usoft\.com\/apptravelassistant\/travel\/findRecommendTrip url reject-dict
+
+# 旅游界面 出境热门城市
+^https:\/\/m\.ly\.com\/vacation\/webapp\/home\/dest url reject-dict
+
+# 旅游界面 大清洗
+^https:\/\/m\.ly\.com\/vacation\/webapp\/home url reject-dict
+
+# 旅游界面 热门推荐
+^https:\/\/m\.ly\.com\/vacation\/webapp\/list\/recommendLines url reject-dict
+
+# 旅游界面 精选目的地
+^https:\/\/m\.ly\.com\/vacation\/webapp\/content\/destination url reject-dict
+
+# 搜索推广
+^https:\/\/tcmobileapi\.17usoft\.com\/appsearch\/check\/searchnearbyscenery url reject-dict
+
+# 搜索发现
+^https:\/\/tcmobileapi\.17usoft\.com\/appsearch\/check\/hotlist url reject-dict
+
+# 促销计划
+^https:\/\/wx\.17u\.cn\/travelaroundapi\/page\/getAllPromotionPlans url reject-dict
+
+# 民宿界面 轮播图
+^https:\/\/m\.ly\.com\/tapi\/minsuhomepagebannertips url reject-dict
+
+# 租车界面 广告
+^https:\/\/wx\.17u\.cn\/crapi\/query\/ad url reject-dict
+
+# 签证界面弹窗
+^https:\/\/m\.ly\.com\/visa\/fetch\/home\/getAdvDialogData url reject-dict
+
+# 机票界面 周末拼假
+^https:\/\/wx\.17u\.cn\/flightedward\/jointHoliday\/appIndex url reject-dict
+
+# 船票界面 轮播图
+^https:\/\/wx\.17u\.cn\/shipgateway\/advertisement\/getAdvertisement url reject-dict
+
+# 火车票上方横幅
+^https:\/\/wx\.17u\.cn\/mihawkapi\/ad\/info url reject-dict
+
+# 酒店界面广告
+^https:\/\/mobilehotelapi\.elong\.com\/appHotel\/adx\/advert\/getAdvert url reject-dict
+
+# 酒店界面横幅照片
+^https:\/\/quic-tcmapi\.elong\.com\/hotel\/getHomePageBannerPics url reject-dict
+
+# 风景推荐
+^https:\/\/mobileapi\.ly\.com\/wlfrontend\/app\/scenicRecommend url reject-dict
+
+# 汽车票船票上方横幅轮播和下方导航栏
+^https:\/\/wx\.17u\.cn\/busbff\/home\/config url script-response-body https://raw.githubusercontent.com/LeBron93/lewis/refs/heads/main/Scripts/tongcheng.js
+
+# 景点界面轮播图和右下角悬浮窗
+^https:\/\/mobileapi\.ly\.com\/wlfrontend\/app\/scenicMain url reject-dict
+
+# 开屏广告
+^https:\/\/tcmobileapi\.17usoft\.com\/appindexnew\/index\/openscreen url reject-dict
+
+^https?:\/\/wx\.17u\.cn\/xcxhomeapi\/((aggregator\/index)|(home\/(screen|banner|converge)))$ url reject
+^https?:\/\/wx\.17u\.cn\/crapi\/query\/getAdImgUrlByCode url reject-dict
+
+^https:\/\/tcmobileapi\.17usoft\.com\/appindexnew\/index\/getindexlayoutcelllist url reject-dict
+
+^https:\/\/tcmobileapi\.17usoft\.com\/appindexnew\/index\/gethotrecommend url reject-dict
+
+# 我的页面净化
+^https:\/\/tcmobileapi\.17usoft\.com\/userextend\/member\/myIndex url reject-200
+
+# 搜索栏推荐
+^https:\/\/tcmobileapi\.17usoft\.com\/appindexnew\/index\/getsearchboxtext url reject-dict
+^https:\/\/tcmobileapi\.17usoft\.com\/appindexnew\/index\/newmemberzone url reject-dict
+
+# 我的订单 精选推荐
+^https:\/\/tcmobileapi\.17usoft\.com\/backendActivity\/ori\/ordercenter\/recommend url reject-dict
+
+# 更新弹窗
+^https:\/\/tcmobileapi\.17usoft\.com\/foundation\/foundationHandler\.ashx url reject-dict
+
+[Script]
+
+[mitm]
+hostname = *.ly.com, *.17usoft.com, *.17u.cn, mobilehotelapi.elong.com, quic-tcmapi.elong.com
+
+*/
