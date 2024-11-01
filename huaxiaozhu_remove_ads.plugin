@@ -1,0 +1,56 @@
+#!name = 花小猪去广告 
+#!desc = 花小猪去广告@派大星
+#!openUrl = 
+#!author = 派大星
+#!tag = 去广告
+#!system = 
+#!system_version = 
+#!loon_version = 3.2.1(745)
+#!homepage = 
+#!icon = https://raw.githubusercontent.com/johnmillzer/Icon/main/plugin/huaxiaozhu.png
+#!date = 2024-10-24 19:31:58
+
+[Rule]
+DOMAIN, gwp.hongyibo.com.cn, REJECT
+
+[Rewrite]
+# 首页信息流
+^https:\/\/casper-agent\.hongyibo\.com\.cn\/agent\/v3\/feeds\? reject
+
+# 首页弹窗
+^https:\/\/res\.hongyibo\.com\.cn\/os\/gs\/resapi\/activity\/mget\? reject-dict
+
+# 广告跟踪
+^https:\/\/adtrack\.hongyibo\.com\.cn\/trackx\? reject-dict
+
+# 屏蔽更新
+^https:\/\/conf\.hongyibo\.com\.cn\/api\/dynamicmodule\/update\? reject-dict
+
+# 首页安全中心提醒
+^https:\/\/sec-guard\.hongyibo\.com\.cn\/api\/guard\/psg\/v2\/getShieldStatus\? reject-dict
+
+# 顺风车，代驾界面围巾
+^https:\/\/api\.hongyibo\.com\.cn\/gulfstream\/pre-sale\/v2\/core\/IndexInfo\? reject-dict
+
+[Script]
+# 导航栏
+http-response ^https:\/\/api\.hongyibo\.com\.cn\/gulfstream\/passenger-center\/v\d\/other\/pData\? script-path = huaxiaozhu_remove_ads.js, requires-body = true, tag = 导航栏
+
+# 资源列表
+http-response ^https:\/\/api\.hongyibo\.com\.cn\/gulfstream\/passenger-center\/v1\/other\/pLayout\? script-path = huaxiaozhu_remove_ads.js, requires-body = true, tag = 资源列表
+
+# 侧边栏
+http-response ^https:\/\/common\.hongyibo\.com\.cn\/usercenter\/kflowermenu script-path = huaxiaozhu_remove_ads.js, requires-body = true, tag = 侧边栏
+
+# 支付界面套餐推荐
+http-response ^https:\/\/pay\.hongyibo\.com\.cn\/gulfstream\/pay\/v1\/client\/getPayInfo\? script-path = huaxiaozhu_remove_ads.js, requires-body = true, tag = 支付界面套餐推荐
+http-response ^https:\/\/pay\.hongyibo\.com\.cn\/gulfstream\/pay\/v1\/client\/changePayInfo\? script-path = huaxiaozhu_remove_ads.js, requires-body = true, tag = 支付界面套餐推荐
+
+# 打车界面
+http-response ^https:\/\/api\.hongyibo\.com\.cn\/gulfstream\/passenger\/v2\/core\/pMultiEstimatePrice\? script-path = huaxiaozhu_remove_ads.js, requires-body = true, tag = 打车界面
+
+# 搜索热门地点(该域名禁止MITM，如需启动，请注入SSL插件)
+//^https:\/\/map-poi\.hongyibo\.com\.cn\/mapapi\/recommend\? url script-response-body hot.js
+
+[MitM]
+hostname = api.hongyibo.com.cn, res.hongyibo.com.cn, conf.hongyibo.com.cn, security.hongyibo.com.cn, common.hongyibo.com.cn, security.hongyibo.com.cn, sec-guard.hongyibo.com.cn, pay.hongyibo.com.cn
