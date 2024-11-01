@@ -1,0 +1,254 @@
+#!name = 去哪儿去广告
+#!desc = 深度整理去哪儿去广告@派大星
+#!openUrl = 
+#!author = 派大星，奶思
+#!tag = 去广告
+#!system = 
+#!system_version = 
+#!loon_version = 3.2.1(745)
+#!homepage = 
+#!icon = https://raw.githubusercontent.com/johnmillzer/Icon/main/plugin/qunaer.png
+#!date = 2024-10-24 22:53:47
+
+[Rule]
+#
+[Rewrite]
+# 开屏广告
+^https?:\/\/qde\.qunar\.com\/preload reject-200 
+^https?:\/\/homefront\.qunar\.com\/front\/splash\/ad reject-dict
+^https?:\/\/client\.qunar\.com\/pitcher-proxy\?qrt=p_splashAd reject
+
+
+#以下是派大星的
+# 点击率统计
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_cns_ctrStatistic reject-dict
+
+# ● 首页
+# 首页下拉隐藏卡片
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=qpub_animateSloganView reject-dict
+
+# 主页通知横幅 
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=home_notice_banner reject-dict
+
+# 首页搜索建议
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=suggestion_operation_app reject-dict
+
+# 首页搜索界面推广（精选酒店等等）
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=innovation_popular_recommend reject-dict
+
+# 搜索界面净化
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=innovation_single_rankinglist reject-dict
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=innovation_rankinglist_head reject-dict
+
+# 首页右上角攻略地图，或者红包券
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=pp_gw_home_quickEntrance reject-dict
+
+# 主页剪辑板// ▲  没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_home_clipboard reject-dict
+
+# 首页第二屏幕卡片// ▲ 杀的太厉害
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_secondScreen_cards reject-dict
+
+# 内容api通用封装选项卡(下方推广)//
+//^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=content_api_common_footprint_tab_getTabList reject-dict
+
+# 更新热门城市
+//^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_updateHotCity reject-dict
+
+
+
+# ● 酒店
+
+# 酒店上方推广滚屏图
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_hotelAdRecommend reject-dict
+
+# 酒店搜索下方热门词/优惠券
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_uranus_SearchNavigation reject-dict
+
+# 酒店搜索页面，下方的各种导航
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_searchNavigation reject-dict
+
+# 酒店主页各种榜单，特价，套餐 
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_searchPrompt reject-dict
+
+# 酒店主页下方的建议列表
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_homesuggestlist reject-dict
+
+# 热门推荐
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_hhotdog_dest_recommend reject-dict
+
+# 酒店海外下方推广
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_hhotdog_clist reject-dict
+
+# 酒店钟点房下方推广
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_hhotdog_HotelHourRec reject-dict
+
+# 民宿下方推广
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=tj_bnb reject-dict
+
+# 酒店推荐房型
+//^https:\/\/order\.qunar\.com\/api\/order\/recommend\.do reject-dict
+# 酒店默认旅客
+//^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_hotelDefaultTraveller reject-dict
+
+# 酒店续住界面下方酒店周边 ▲ 是否准确
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_around_information reject-dict
+
+# 弹出显示记录
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=h_medusa_popupShowRecord reject-dict
+
+
+
+# ● 航班
+
+# 机票上方的轮播图
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_home_carousel reject-dict
+
+# 机票搜索角标 ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_home_head reject-dict
+
+# 机票上滑第二屏幕卡
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_homecard_secondFloor reject-dict
+
+# 机票下方低价购，安心飞
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_appUserService reject-dict
+
+# 机票界面 ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_tExtraRecommend reject-dict
+
+#机票下方推广，券
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_home_marketing reject-dict
+
+# 低价机票 
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_home_page_low_price reject-dict
+
+# 机票下方热门活动 
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_home_banner reject-dict
+
+# 机票界面下一站去哪儿
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_urInfo_next_stop reject-dict
+
+# 首页等待付款显示
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_homecard_wait_pay_order reject-dict
+
+# 航班主页更多
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_home_more reject-dict
+
+# 获取广告id
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_sylas_get_adspotId reject-dict
+
+# 旅途幸运签
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_pallas_sc_activity_lottery_rewards reject-dict
+
+# 订单微信提醒横幅
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_flight_order_wechat_tab reject-dict
+
+# 可能是退出订票时显示的“当前XX人在看”
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=f_add_apollo_label reject-dict
+
+
+
+# ● 火车
+
+# 火车票界面
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_gm_trainCouponBooking reject-dict
+
+# 携程火车票横幅
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/13916\/json\/tripAds reject-dict
+
+# 展示空间广告
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_ga_DisplaySpaceAd reject-dict
+
+# 火车页面某些推广 ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_ga_CardQuadrangle reject-dict
+
+# 火车查询下方一些须知，折扣，余票，本人车票，车上订餐等
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_tTrainHomeParticularityTip reject-dict
+
+# 火车票界面底部的广告
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_ga_TrainBottomADBanner reject-dict
+
+# 火车票界面净化 ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_ga_TrainFeConfig reject-dict
+
+# 火车票 ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=t_ga_TrainGetXpConfig reject-dict
+
+# 首页角标横幅 ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=qpub_markBanner reject-dict
+
+# 获取弹出状态// ▲ 没搞清什么意思
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=qpub_getPopupStatus reject-dict
+
+# 主页弹窗
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_homePopUp reject-dict
+
+# 获取更新模板
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=pp_front_template_getUpdateTemplates reject-dict
+
+
+
+# ● 租车页面
+
+# 租车界面轮播图
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/13916\/tripAds\.json\? reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/18631\/queryRoadTripRecomd reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/13609\/fuzzySearchGeo reject-dict
+
+# 租车界面产品排名
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/18631\/queryTopProducts reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/18631\/queryRoadTripRecomd reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/18631\/queryProducts\?batch= reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/13609\/fuzzySearchGeo reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/18631\/queryRoadTripRecomd reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/18631\/config reject-dict
+
+# 获取未来旅行 ▲ 没搞清什么意思
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/13609\/getAboutToTravel reject-dict
+^https:\/\/m\.ctrip\.com\/restapi\/soa2\/14791\/querySkins reject-dict
+
+
+# ● 行程页面
+
+# 热门精选
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=content_api_common_feed_open_postList reject-dict
+
+# 订单 上方微信通信横幅
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_tripcard_top reject-dict
+
+
+
+
+# ● 我的
+
+# 日志
+//^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_logger reject-dict
+
+# 弹出登陆
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_homePopUp reject-dict
+
+# 赠送钻石权益图片
+^https:\/\/s\.qunarzz\.com\/f_cms\/2024\/1709024519742_840211441\.png reject
+
+# 我的 界面下方推广
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=p_feedlist_recommend reject-dict
+
+# 我的 钱包之类，常用信息模块
+#^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=pp_gw_u_myMainCard reject-dict
+
+# 我的 钱包上面的红点提醒
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=pp_gw_u_myRedPoint reject-dict
+
+# 我的 右下角悬浮窗
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=pp_gw_u_myPopTask reject-dict
+
+# 我的 开启消息通知横幅
+^https:\/\/slugger\.qunar\.com\/slugger-proxy\?qrt=pp_gw_u_myOrderBanner reject-dict
+
+
+
+[Script]
+
+
+[MitM]
+hostname = qde.qunar.com,homefront.qunar.com,client.qunar.com,slugger.qunar.com, m.ctrip.com, order.qunar.com
