@@ -123,12 +123,6 @@ xljnuiyivsuvgo_enable = switch,true,false,tag=香蕉是一种水果-脚本开关
 xnhsuu_enable = switch,true,false,tag=小红书-脚本开关
 ximalaya_enable = switch,true,false,tag=喜马拉雅-脚本开关
 youtube_enable = switch,true,false,tag=YouTube-脚本开关
-屏蔽上传按钮=switch,true,false,tag=屏蔽上传按钮, desc=屏蔽上传按钮
-屏蔽选段按钮=switch,true,false,tag=屏蔽选段按钮, desc=屏蔽选段按钮
-屏蔽Shorts按钮=switch,false,true,tag=屏蔽Shorts按钮, desc=屏蔽Shorts按钮
-字幕翻译语言=input,off,tag=字幕翻译语言, desc=字幕翻译语言
-歌词翻译语言=input,off,tag=歌词翻译语言, desc=歌词翻译语言
-启用调试模式=switch,false,true,tag=启用调试模式, desc=启用调试模式
 yzku_enable = switch,true,false,tag=优酷-脚本开关
 yzxiapp_enable = switch,true,false,tag=悠洗APP-脚本开关
 vihu_enable = switch,true,false,tag=知乎-脚本开关
@@ -4388,7 +4382,6 @@ http-response ^https?:\/\/.*\.xima.*\.com\/mobile-user\/v\d\/homePage script-pat
 # > YouTube
 # 响应体
 http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch) script-path=https://raw.githubusercontent.com/Maasea/sgmodule/refs/heads/master/Script/Youtube/youtube.response.js, requires-body=true, binary-body-mode=true, timeout=60, tag=YouTube响应体, enable={youtube_enable}
-http-response ^https:\/\/youtubei\.googleapis\.com\/(youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch))(\?(.*))?$ script-path=https://raw.githubusercontent.com/Maasea/sgmodule/master/Script/Youtube/youtube.response.js, requires-body=true, binary-body-mode=true, tag=youtube.response, argument="{"lyricLang":"{歌词翻译语言}","captionLang":"{字幕翻译语言}","blockUpload":{屏蔽上传按钮},"blockImmersive":{屏蔽选段按钮},"blockShorts":{屏蔽Shorts按钮},"debug":{启用调试模式}}"
 
 # > 优酷
 # 播放详情页,首页信息流,顶部tab,我的页面,评论区
