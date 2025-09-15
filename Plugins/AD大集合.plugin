@@ -98,20 +98,7 @@ tgxyxbwf_enable = switch,true,false,tag=腾讯新闻-脚本开关
 vgtime_enable = switch,true,false,tag=vgTime-脚本开关
 lmjpxmvi_enable = switch,true,false,tag=解除微信链接限制-脚本开关
 
-# > 网易云音乐
-MY = switch,true,tag=网易云音乐-[隐藏底部]漫游标签
-DT = switch,false,tag=网易云音乐-[隐藏底部]笔记标签
-FX = switch,true,tag=网易云音乐-[隐藏底部]发现标签
-PRGG = switch,true,tag=网易云音乐-[隐藏首页]问候语
-PRRK = switch,false,tag=网易云音乐-[隐藏首页]排行榜
-PRDRD = switch,false,tag=网易云音乐-[隐藏首页]每日推荐
-PRSCVPT = switch,false,tag=网易云音乐-[隐藏首页]推荐歌单
-PRST = switch,false,tag=网易云音乐-[隐藏首页]最近常听
-PRRR = switch,true,tag=网易云音乐-[隐藏首页]雷达歌单
-HMPR = switch,false,tag=网易云音乐-[隐藏首页]音乐合伙人
-PRMST = switch,true,tag=网易云音乐-[隐藏首页]推荐专属歌单
-PRCN = switch,true,tag=网易云音乐-[隐藏首页]你的专属歌单
-whyiyyybyt_enable = switch,true,false,tag=网易云音乐-脚本开关
+
 
 whyiyzdccidm_enable = switch,true,false,tag=网易有道词典-脚本开关
 wfnibovj_enable = switch,true,false,tag=温尼伯站-脚本开关
@@ -2848,17 +2835,7 @@ https://support.you.163.com/appversync/check.do reject
 ^https?:\/\/sp\.kaola\.com\/api\/openad reject-200
 ^https?:\/\/gw\.kaola\.com\/gw\/dgmobile\/newOpenAd reject
 
-# > 网易云音乐
-# hostname = ipv4.music.163.com, interface.music.163.com, interface3.music.163.com, interface9.music.163.com
-# 屏蔽广告
-https?:\/\/(ipv4|interface\d?)\.music\.163.com\/e?api\/ad reject-dict
-# 今日运势 商城 Beat专区 音乐收藏家 | type:ACTIVITY | 低至5.2折
-^https?:\/\/interface\d?\.music\.163\.com\/w?e?api\/(side-bar\/mini-program\/music-service\/account|delivery\/(batch-deliver|deliver)|moment\/tab\/info\/get|yunbei\/account\/entrance\/get) reject-dict
-# 播放页歌名下方∶乐迷团｜关注｜播放页提示｜音乐应用红点｜播放提示
-^https?:\/\/interface\d?\.music\.163\.com\/eapi\/(resource\/comments?\/musiciansaid|community\/friends\/fans-group\/artist\/group\/get|user\/sub\/artist|music\/songshare\/text\/recommend\/get|mine\/applet\/redpoint|resniche\/position\/play\/new\/get) reject-dict
-# 搜索页热搜卡片｜猜你喜欢｜我的应用下方提醒
-^https?:\/\/interface\d?\.music\.163.com\/w?e?api\/(search\/(chart|default|rcmd\/keyword|specialkeyword)|resource-exposure\/|activity\/bonus\/playpage\/time\/query) reject-dict
-^https?:\/\/interface\d?\.music\.163.com\/eapi\/(mlivestream\/entrance\/playpage|link\/(position\/show\/strategy|scene\/show)|ios\/version|v\d\/content\/exposure\/comment\/banner) reject-dict
+
 
 # > 网易邮箱
 # hostname = *.music.126.net, img1.126.net, www.icourse163.org, nex.163.com, g1.163.com, client.mail.163.com, c.m.163.com, interface*.music.163.com
