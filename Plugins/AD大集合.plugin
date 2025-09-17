@@ -92,7 +92,6 @@ useractivity=switch, true, tag=Spotify-启用Apple设备接力, desc=此开关�
 soul_enable = switch,true,false,tag=Soul-脚本开关
 sudaxnyr_enable = switch,true,false,tag=苏打校园APP-脚本开关
 smzdm_enable = switch,true,false,tag=什么值得买-脚本开关
-tf_enable = switch,true,false,tag=TestFlight国区-重写开关
 tcbc_enable = switch,true,false,tag=淘宝-脚本开关
 tgxyxbwf_enable = switch,true,false,tag=腾讯新闻-脚本开关
 vgtime_enable = switch,true,false,tag=vgTime-脚本开关
@@ -2518,9 +2517,6 @@ https://apis.lifeweek.com.cn/api/baseConfig/getIosNewConfig reject
 # hostname = alt-r.my.com, imgx.jampp.com
 ^https?:\/\/alt-r\.my\.com\/mobile reject-dict
 ^https?:\/\/imgx\.jampp\.com\/imgsrv\/tn reject-img
-
-# TestFlight 国区下载修正
-# ^https:\/\/testflight\.apple\.com\/v2\/accounts\/.*\/apps\/\d*\/builds\/\d*\/install$ request-body-replace-regex "storefrontId"\x20:\x20.*, "storefrontId":"143441-19,29"
 
 # > TT语音
 # hostname = ga-album-cdnqn.52tt.com
