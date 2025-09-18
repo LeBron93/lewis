@@ -85,9 +85,6 @@ quda_enable = switch,true,false,tag=去哒-脚本开关
 reddit_enable = switch,true,false,tag=Reddit-脚本开关
 rfrfuipk_enable = switch,true,false,tag=人人视频-脚本开关
 
-# Spotify
-tab=switch, true, tag=Spotify-移除底栏创建按钮, desc=此开关控制是否移除底栏创建按钮
-useractivity=switch, true, tag=Spotify-启用Apple设备接力, desc=此开关控制是否使用Apple设备接力
 
 soul_enable = switch,true,false,tag=Soul-脚本开关
 sudaxnyr_enable = switch,true,false,tag=苏打校园APP-脚本开关
@@ -108,7 +105,6 @@ xmyu_enable = switch,true,false,tag=闲鱼-脚本开关
 xljnuiyivsuvgo_enable = switch,true,false,tag=香蕉是一种水果-脚本开关
 xnhsuu_enable = switch,true,false,tag=小红书-脚本开关
 ximalaya_enable = switch,true,false,tag=喜马拉雅-脚本开关
-youtube_enable = switch,true,false,tag=YouTube-脚本开关
 yzku_enable = switch,true,false,tag=优酷-脚本开关
 yzxiapp_enable = switch,true,false,tag=悠洗APP-脚本开关
 vihu_enable = switch,true,false,tag=知乎-脚本开关
@@ -353,12 +349,6 @@ DOMAIN-KEYWORD, video-cn.snssdk.com, REJECT
 DOMAIN-KEYWORD, asiad.byteactivity, REJECT
 
 
-
-# >>>>>>>>>>>>>>> ✅ S ✅ <<<<<<<<<<<<<<
-# > Spotify
-AND, ((DOMAIN, spclient.wg.spotify.com), (PROTOCOL, QUIC)), REJECT
-AND, ((DOMAIN, gae2-spclient.spotify.com), (PROTOCOL, QUIC)), REJECT
-AND, ((DOMAIN, guc3-spclient.spotify.com), (PROTOCOL, QUIC)), REJECT
 
 
 
@@ -2302,10 +2292,7 @@ https://api.rr.tv/storage/business/rootName/app/homePage\?dataType=JSON reject-d
 
 
 # >>>>>>>>>>>>>>> ✅ S ✅ <<<<<<<<<<<<<<
-# > Spotify
-# hostname = gae2-spclient.spotify.com, guc3-spclient.spotify.com, spclient.wg.spotify.com
-^https?:\/\/(?:gae2-spclient|guc3-spclient|spclient\.wg)\.spotify\.com(?::443)?\/pendragon\/ reject-dict
-^https?:\/\/(gae2-spclient|guc3-spclient|spclient\.wg)\.spotify\.com(?::443)?\/artistview\/v1\/artist\/(.*)&platform=iphone header https://$1.spotify.com/artistview/v1/artist/$2&platform=ipad
+
 
 # > Soul
 # hostname = 47.110.187.87, ssp.soulapp.cn, chat-live.soulapp.cn, api-chat.soulapp.cn, api-account.soulapp.cn, api-global.soulapp.me, api-a.soulapp.cn, api-pay.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, api-user.soulapp.cn
@@ -3301,10 +3288,7 @@ https://mgesq.api.mgtv.com/v2/user/center/icon reject-dict
 
 
 # >>>>>>>>>>>>>>> ✅ Y ✅ <<<<<<<<<<<<<<
-# > YouTube
-# hostname = rr*.googlevideo.com, youtubei.googleapis.com
-# 播放页广告
-^https:\/\/rr[\w-]+\.googlevideo\.com\/initplayback\? reject-dict
+
 
 # > 曜影医疗
 # 去开屏和弹窗广告
@@ -4197,8 +4181,6 @@ http-response https://api.rr.tv/user/profile script-path=https://raw.githubuserc
 
 
 # >>>>>>>>>>>>>>> ✅ S ✅ <<<<<<<<<<<<<<
-# > Spotify
-http-response ^https?:\/\/(?:gae2-spclient|guc3-spclient|spclient\.wg)\.spotify\.com(?::443)?\/(?:bootstrap|user-customization-service) script-path=https://raw.githubusercontent.com/001ProMax/Surge/refs/heads/main/Script/Spotify.Crack.Dev.js, requires-body=true, binary-body-mode=true, timeout=3, argument=[{tab},{useractivity}], tag=Spotify去广告
 
 # > Soul
 # 替换信息收集
@@ -4240,9 +4222,6 @@ http-response ^https?:\/\/qianbao\.smzdm\.com\/v\d\/app\/home script-path=https:
 
 
 # >>>>>>>>>>>>>>> ✅ T ✅ <<<<<<<<<<<<<<
-# > TestFlight
-# TF账户管理 App更新时提示"APP不可用"问题，解决部分TF兑换错了区域的问题，例如Loon兑换到了国区
-# http-request ^https?:\/\/testflight\.apple\.com\/v\d\/(app|account|invite)s\/ script-path=https://raw.githubusercontent.com/NobyDa/Script/master/TestFlight/TestFlightAccount.js, requires-body=true, timeout=60, tag=TestFlight账户管理
 
 # > 淘宝
 http-response ^https?:\/\/guide-acs\.m\.taobao\.com\/gw\/mtop\.taobao\.(cloudvideo\.video\.query|wireless\.home\.splash\.awesome\.get) script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/myBlockAds.js, requires-body=true, timeout=60, tag=淘宝, enable={tcbc_enable}
@@ -4352,9 +4331,6 @@ http-response ^https?:\/\/.*\.xima.*\.com\/mobile-user\/v\d\/homePage script-pat
 
 
 # >>>>>>>>>>>>>>> ✅ Y ✅ <<<<<<<<<<<<<<
-# > YouTube
-# 响应体
-http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch) script-path=https://raw.githubusercontent.com/Maasea/sgmodule/refs/heads/master/Script/Youtube/youtube.response.js, requires-body=true, binary-body-mode=true, timeout=60, tag=YouTube响应体, enable={youtube_enable}
 
 # > 优酷
 # 播放详情页,首页信息流,顶部tab,我的页面,评论区
