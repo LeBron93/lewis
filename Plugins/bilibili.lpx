@@ -57,4 +57,4 @@ http-response ^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/region\/index\? 
 http-response ^https?:\/\/app\.bili(bili\.com|api\.net)\/x\/v2\/channel\/region\/list\? requires-body=1, script-path=https://github.com/BiliUniverse/Enhanced/releases/download/v0.5.10/response.bundle.js, tag=📺 BiliBili.Enhanced.x.v2.channel.region.list, argument=[{Home.Tab},{Home.Tab_default},{Home.Top_left},{Home.Top},{Bottom},{LogLevel}]
 
 [MitM]
-hostname = grpc.biliapi.net, app.bilibili.com, api.bilibili.com, api.live.bilibili.com, line3-h5-mobile-api.biligame.com
+hostname = grpc.biliapi.net, app.bilibili.com, api.bilibili.com, api.live.bilibili.com, line3-h5-mobile-api.biligame.com,app.biliapi.net
