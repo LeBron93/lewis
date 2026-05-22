@@ -1,0 +1,202 @@
+/*
+# Loon 美区限免提醒
+# Author: ChatGPT
+# 更新时间: 2026-05-22
+# 功能:
+# 1. 获取 Apple Store 美区限免
+# 2. 自动过滤已推送内容
+# 3. 支持 Loon 通知
+# 4. 支持 Bark 推送
+# 5. 点击通知直接跳转 App Store
+#
+# 使用:
+# 在 Loon 参数中填写 Bark Key
+# 示例:
+# script-path=xxx.js, argument=你的BarkKey
+*/
+
+const barkKey = typeof $argument !== "undefined" ? $argument : "";
+
+const API =
+  "https://api.gofans.cn/v1/m/app_records?page=1&limit=10";
+
+const DETAIL_API = "https://api.gofans.cn/v1/m/apps/";
+
+const CACHE_KEY = "FREE_APPS_CACHE";
+
+const cache = JSON.parse($persistentStore.read(CACHE_KEY) || "{}");
+
+const currentTime = () => {
+  return new Date().toLocaleString();
+};
+
+function request(url) {
+  return new Promise((resolve, reject) => {
+    $httpClient.get(
+      {
+        url,
+        headers: {
+          referer: "https://m.gofans.cn/",
+          origin: "https://m.gofans.cn",
+        },
+      },
+      (err, resp, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          try {
+            resolve(JSON.parse(data));
+          } catch (e) {
+            reject(e);
+          }
+        }
+      }
+    );
+  });
+}
+
+function bark(title, body, icon, url) {
+  return new Promise((resolve, reject) => {
+
+    if (!barkKey) {
+      resolve();
+      return;
+    }
+
+    const req = {
+      url: "https://api.day.app/push",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        device_key: barkKey,
+        title,
+        body,
+        icon,
+        url,
+        level: "passive",
+      }),
+    };
+
+    $httpClient.post(req, (err, resp, data) => {
+      if (err) reject(err);
+      else resolve(data);
+    });
+  });
+}
+
+function notify(app) {
+
+  const body =
+    `类别: ${app.primary_genre_name}\n` +
+    `版本: ${app.version}\n` +
+    `原价: ${app.original_price} → 现价: ${app.price}\n\n` +
+    `${app.description}`;
+
+  const openUrl = app.track_url;
+
+  // Loon 本地通知
+  $notification.post(
+    `🆓 ${app.name}`,
+    "美区限免",
+    body,
+    {
+      openUrl: openUrl,
+    }
+  );
+
+  // Bark 推送
+  return bark(
+    app.name,
+    body,
+    app.icon,
+    openUrl
+  );
+}
+
+async function main() {
+
+  try {
+
+    const list = await request(API);
+
+    if (!list.data || list.data.length === 0) {
+
+      $notification.post(
+        "限免 APP",
+        "暂无更新",
+        currentTime()
+      );
+
+      $done();
+      return;
+    }
+
+    const newApps = [];
+
+    for (const item of list.data) {
+
+      const uuid = item.uuid;
+
+      if (cache[uuid]) {
+        continue;
+      }
+
+      const detail = await request(
+        DETAIL_API + uuid
+      );
+
+      detail.description =
+        (detail.description || "").slice(0, 200);
+
+      cache[uuid] = {
+        name: detail.name,
+      };
+
+      newApps.push(detail);
+    }
+
+    // 推送新应用
+    for (const app of newApps) {
+      await notify(app);
+    }
+
+    // 保存缓存
+    $persistentStore.write(
+      JSON.stringify(cache),
+      CACHE_KEY
+    );
+
+    // 结束通知
+    if (newApps.length > 0) {
+
+      $notification.post(
+        "限免 APP 更新",
+        `新增 ${newApps.length} 个`,
+        newApps.map(i => i.name).join("\n")
+      );
+
+    } else {
+
+      $notification.post(
+        "限免 APP",
+        "暂无新增",
+        currentTime()
+      );
+    }
+
+  } catch (e) {
+
+    console.log(e);
+
+    $notification.post(
+      "限免 APP",
+      "运行失败",
+      String(e)
+    );
+  }
+
+  $done();
+}
+
+main();
