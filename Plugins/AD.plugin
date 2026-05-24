@@ -102,9 +102,7 @@ quda_enable = switch,true,false,tag=去哒-脚本开关
 reddit_enable = switch,true,false,tag=Reddit-脚本开关
 rfrfuipk_enable = switch,true,false,tag=人人视频-脚本开关
 
-# Spotify
-tab=switch, true, tag=Spotify-移除底栏创建按钮, desc=此开关控制是否移除底栏创建按钮
-useractivity=switch, true, tag=Spotify-启用Apple设备接力, desc=此开关控制是否使用Apple设备接力
+
 
 soul_enable = switch,true,false,tag=Soul-脚本开关
 sudaxnyr_enable = switch,true,false,tag=苏打校园APP-脚本开关
@@ -2426,11 +2424,7 @@ https://api.rr.tv/storage/business/rootName/app/homePage\?dataType=JSON reject-d
 
 
 # >>>>>>>>>>>>>>> ✅ S ✅ <<<<<<<<<<<<<<
-# > Spotify
-# hostname = *-spclient.spotify.com, spclient.wg.spotify.com
-^https:\/\/(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/pendragon\/ reject-dict
-^https:\/\/(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/artistview\/v1\/artist\/(.*)&platform=iphone header https://spclient.wg.spotify.com/artistview/v1/artist/$1&platform=ipad
-^https:\/\/gae2-spclient\.spotify\.com:443\/ad reject
+
 
 # > Soul
 # hostname = 47.110.187.87, ssp.soulapp.cn, chat-live.soulapp.cn, api-chat.soulapp.cn, api-account.soulapp.cn, api-global.soulapp.me, api-a.soulapp.cn, api-pay.soulapp.cn, gateway-mobile-gray.soulapp.cn, post.soulapp.cn, api-user.soulapp.cn
@@ -4365,8 +4359,7 @@ http-response https://api.rr.tv/user/profile script-path=https://raw.githubuserc
 
 
 # >>>>>>>>>>>>>>> ✅ S ✅ <<<<<<<<<<<<<<
-# > Spotify
-http-response ^https:\/\/(?:\w+-spclient|spclient\.wg)\.spotify\.com(?::443)?\/(?:bootstrap|user-customization-service) script-path=https://raw.githubusercontent.com/001ProMax/Surge/refs/heads/main/Script/Spotify.Crack.Dev.js, requires-body=true, binary-body-mode=true, timeout=3, argument=[{tab},{useractivity}], tag=Protobuf
+
 
 # > Soul
 # 替换信息收集
