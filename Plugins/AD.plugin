@@ -50,7 +50,6 @@
 #############################################
 
 [Argument]
-12306_enable = switch,true,false,tag=12306-脚本开关
 555_enable = switch,true,false,tag=555影视-脚本开关
 51xyk_enable = switch,true,false,tag=51信用卡管家-脚本开关
 albb_enable = switch,true,false,tag=阿里巴巴-脚本开关
@@ -3855,9 +3854,7 @@ http:\/\/.+\.gamersky.com/.+/lists/getListElements response-body-json-jq '.listE
 
 
 # >>>>>>>>>>>>>>> ✅ 1 ✅ <<<<<<<<<<<<<<
-# > 12306
-# hostname = ad.12306.cn
-http-request ^https?:\/\/ad\.12306\.cn\/ad\/ser\/getAdList script-path=https://raw.githubusercontent.com/kokoryh/Script/master/js/12306.js, requires-body=true, timeout=60, tag=12306, enable={12306_enable}
+
 
 
 
@@ -4376,7 +4373,6 @@ hostname = *.gamersky.com, apis.folidaymall.com, emisdatacenteraws.hafoo.com, sp
 #############################################
 
 [Argument]
-12306_enable = switch,true,false,tag=12306-脚本开关
 555_enable = switch,true,false,tag=555影视-脚本开关
 51xyk_enable = switch,true,false,tag=51信用卡管家-脚本开关
 51job_enable = switch,true,false,tag=51job-脚本开关
@@ -8187,9 +8183,7 @@ http:\/\/.+\.gamersky.com/.+/lists/getListElements response-body-json-jq '.listE
 
 
 # >>>>>>>>>>>>>>> ✅ 1 ✅ <<<<<<<<<<<<<<
-# > 12306
-# hostname = ad.12306.cn
-http-request ^https?:\/\/ad\.12306\.cn\/ad\/ser\/getAdList script-path=https://raw.githubusercontent.com/kokoryh/Script/master/js/12306.js, requires-body=true, timeout=60, tag=12306, enable={12306_enable}
+
 
 
 
