@@ -118,9 +118,6 @@ xntuisis_enable = switch,true,false,tag=小兔充充-脚本开关
 xnmh_enable = switch,true,false,tag=小芒-脚本开关
 xmyu_enable = switch,true,false,tag=闲鱼-脚本开关
 xljnuiyivsuvgo_enable = switch,true,false,tag=香蕉是一种水果-脚本开关
-xhs_enable = switch,true,false,tag=小红书-脚本开关
-ximalaya_enable = switch,true,false,tag=喜马拉雅-脚本开关
-youtube_enable = switch,true,false,tag=YouTube-脚本开关
 yzku_enable = switch,true,false,tag=优酷-脚本开关
 yzxiapp_enable = switch,true,false,tag=悠洗APP-脚本开关
 vhuhgsjn_enable = switch,true,false,tag=掌上公交-脚本开关
@@ -3449,10 +3446,6 @@ http-response ^https?:\/\/www\.myusmile\.online\/user\/plaqueTopic\/selectByType
 
 
 # >>>>>>>>>>>>>>> ✅ Y ✅ <<<<<<<<<<<<<<
-# > YouTube
-# hostname = rr*.googlevideo.com, youtubei.googleapis.com
-# 播放页广告
-^https:\/\/rr[\w-]+\.googlevideo\.com\/initplayback\? reject-dict
 
 # > 曜影医疗
 # 去开屏和弹窗广告
@@ -4432,9 +4425,7 @@ http-response ^https?:\/\/.+?\.(pipi|fuli|xiang(jiao|xiang))apps\.com\/(ucp\/ind
 
 
 # >>>>>>>>>>>>>>> ✅ Y ✅ <<<<<<<<<<<<<<
-# > YouTube
-# 响应体
-http-response ^https:\/\/youtubei\.googleapis\.com\/youtubei\/v1\/(browse|next|player|search|reel\/reel_watch_sequence|guide|account\/get_setting|get_watch) script-path=https://raw.githubusercontent.com/Maasea/sgmodule/refs/heads/master/Script/Youtube/youtube.response.js, requires-body=true, binary-body-mode=true, timeout=60, tag=YouTube响应体, enable={youtube_enable}
+
 
 # > 优酷
 # 播放详情页,首页信息流,顶部tab,我的页面,评论区
@@ -4570,8 +4561,6 @@ xnmh_enable = switch,true,false,tag=小芒-脚本开关
 xmyu_enable = switch,true,false,tag=闲鱼-脚本开关
 xljnuiyivsuvgo_enable = switch,true,false,tag=香蕉是一种水果-脚本开关
 xhs_enable = switch,true,false,tag=小红书-脚本开关
-ximalaya_enable = switch,true,false,tag=喜马拉雅-脚本开关
-youtube_enable = switch,true,false,tag=YouTube-脚本开关
 yzku_enable = switch,true,false,tag=优酷-脚本开关
 yzxiapp_enable = switch,true,false,tag=悠洗APP-脚本开关
 vhuhgsjn_enable = switch,true,false,tag=掌上公交-脚本开关
