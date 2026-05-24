@@ -111,22 +111,6 @@ tcbc_enable = switch,true,false,tag=淘宝-脚本开关
 tgxyxbwf_enable = switch,true,false,tag=腾讯新闻-脚本开关
 vgtime_enable = switch,true,false,tag=vgTime-脚本开关
 lmjpxmvi_enable = switch,true,false,tag=解除微信链接限制-脚本开关
-
-# 网易云音乐
-MY = switch,true,tag=网易云音乐-[隐藏底部]漫游标签
-DT = switch,false,tag=网易云音乐-[隐藏底部]笔记标签
-FX = switch,true,tag=网易云音乐-[隐藏底部]发现标签
-PRGG = switch,true,tag=网易云音乐-[隐藏首页]问候语
-PRRK = switch,false,tag=网易云音乐-[隐藏首页]排行榜
-PRDRD = switch,false,tag=网易云音乐-[隐藏首页]每日推荐
-PRSCVPT = switch,false,tag=网易云音乐-[隐藏首页]推荐歌单
-PRST = switch,false,tag=网易云音乐-[隐藏首页]最近常听
-PRRR = switch,true,tag=网易云音乐-[隐藏首页]雷达歌单
-HMPR = switch,false,tag=网易云音乐-[隐藏首页]音乐合伙人
-PRMST = switch,true,tag=网易云音乐-[隐藏首页]推荐专属歌单
-PRCN = switch,true,tag=网易云音乐-[隐藏首页]你的专属歌单
-whyiyyybyt_enable = switch,true,false,tag=网易云音乐-脚本开关
-
 whyiyzdccidm_enable = switch,true,false,tag=网易有道词典-脚本开关
 wfnibovj_enable = switch,true,false,tag=温尼伯站-脚本开关
 xnmiuhig_enable = switch,true,false,tag=小米商城-脚本开关
@@ -420,12 +404,7 @@ IP-CIDR, 59.111.239.62/32, REJECT, no-resolve
 IP-CIDR, 115.236.121.51/32, REJECT, no-resolve
 IP-CIDR, 115.236.121.195/32, REJECT, no-resolve
 
-# > 网易云音乐
-DOMAIN, iadmusicmat.music.126.net, REJECT
-DOMAIN, iadmat.nosdn.127.net, REJECT
-DOMAIN, iadmatapk.nosdn.127.net, REJECT
-DOMAIN, httpdns.n.netease.com, REJECT
-DOMAIN, httpdns.music.163.com, REJECT
+
 
 
 
@@ -2959,19 +2938,6 @@ https://support.you.163.com/appversync/check.do reject
 ^https?:\/\/kaola-haitao\.oss\.kaolacdn.com\/.+?_\d{3,4}_\d{4}\.jpg\?x-oss-process=image\/resize,m_mfit,w_\d{3,4},h_\d{4}\/format,webp\/quality,Q_85 reject-200
 ^https?:\/\/sp\.kaola\.com\/api\/openad reject-200
 ^https?:\/\/gw\.kaola\.com\/gw\/dgmobile\/newOpenAd reject
-
-# > 网易云音乐
-# hostname = ipv4.music.163.com, interface.music.163.com, interface3.music.163.com, interface9.music.163.com
-# 屏蔽广告
-https?:\/\/(ipv4|interface\d?)\.music\.163.com\/e?api\/ad reject-dict
-# 今日运势 商城 Beat专区 音乐收藏家 | type:ACTIVITY | 低至5.2折
-^https?:\/\/interface\d?\.music\.163\.com\/w?e?api\/(side-bar\/mini-program\/music-service\/account|delivery\/(batch-deliver|deliver)|moment\/tab\/info\/get|yunbei\/account\/entrance\/get) reject-dict
-# 播放页歌名下方∶乐迷团｜关注｜播放页提示｜音乐应用红点｜播放提示
-^https?:\/\/interface\d?\.music\.163\.com\/eapi\/(resource\/comments?\/musiciansaid|community\/friends\/fans-group\/artist\/group\/get|user\/sub\/artist|music\/songshare\/text\/recommend\/get|mine\/applet\/redpoint|resniche\/position\/play\/new\/get) reject-dict
-# 搜索页热搜卡片｜猜你喜欢｜我的应用下方提醒
-^https?:\/\/interface\d?\.music\.163.com\/w?e?api\/(search\/(chart|default|rcmd\/keyword|specialkeyword)|resource-exposure\/|activity\/bonus\/playpage\/time\/query) reject-dict
-^https?:\/\/interface\d?\.music\.163.com\/eapi\/(mlivestream\/entrance\/playpage|link\/(position\/show\/strategy|scene\/show)|ios\/version|v\d\/content\/exposure\/comment\/banner) reject-dict
-
 # > 网易邮箱
 # hostname = *.music.126.net, img1.126.net, www.icourse163.org, nex.163.com, g1.163.com, client.mail.163.com, c.m.163.com, interface*.music.163.com
 ^https?:\/\/p[^4](c)?\.music\.126\.net\/\w+==\/10995\d{13}\.jpg$ reject-img
@@ -4428,23 +4394,6 @@ http-response ^https?:\/\/app02\.vgtime\.com:8080\/vgtime-app\/api\/v2\/init\/ad
 # 微信跳过中间界面，支付宝链接、被封禁链接进行通知弹窗跳转，在微信中用快照显示被封禁的链接（可选），在微信中进行强制重定向（可选），群聊 / 扫码均可使用，可选项可在脚本 2、3 行更改，也可在 BoxJs 中更改。
 http-response ^https\:\/\/(weixin110\.qq|security.wechat)\.com\/cgi-bin\/mmspamsupport-bin\/newredirectconfirmcgi\? script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/UnblockURLinWeChat.js, requires-body=true, timeout=60, tag=UnblockURLinWeChat-解除微信链接限制, enable={lmjpxmvi_enable}
 
-# > 网易云音乐
-# mian | 热推、有话想说、分享一下、歌曲下的祝福等小提示去除 ｜ 评论区 乐迷、星评等级 关注 等 图标去除
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/(batch|v\d\/resource\/comment\/floor\/get) script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_mian, enable={whyiyyybyt_enable}
-# 伪vip
-#http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/(music-vip-membership\/client\/vip\/info|vipnewcenter\/app\/resource\/newaccountpage) script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_vip, enable={whyiyyybyt_enable}
-# tab
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/link\/home\/framework\/tab script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_tab, argument=[{MY},{DT},{FX}], enable={whyiyyybyt_enable}
-# 推荐 | home | 主页
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/(homepage\/block\/page|link\/page\/rcmd\/(resource\/show|block\/resource\/multi\/refresh)) script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_home, argument=[{PRGG},{PRRK},{PRDRD},{PRSCVPT},{PRST},{PRRR},{HMPR},{PRMST},{PRCN}], enable={whyiyyybyt_enable}
-# 发现
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/link\/page\/discovery\/resource\/show script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_fx, enable={whyiyyybyt_enable}
-# effect
-# http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/song\/play\/more\/list\/v\d script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_effect, enable={whyiyyybyt_enable}
-# 我的 MyPageBar ad
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/link\/position\/show\/resource script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_mybarad, enable={whyiyyybyt_enable}
-# 显示未关注你
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/user\/follow\/users\/mixed\/get script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_foll, enable={whyiyyybyt_enable}
 
 # > 网易有道词典
 # 首页净化，学习Tab界面净化，首页听读训练净化
@@ -4636,22 +4585,6 @@ tcbc_enable = switch,true,false,tag=淘宝-脚本开关
 tgxyxbwf_enable = switch,true,false,tag=腾讯新闻-脚本开关
 vgtime_enable = switch,true,false,tag=vgTime-脚本开关
 lmjpxmvi_enable = switch,true,false,tag=解除微信链接限制-脚本开关
-
-# 网易云音乐
-MY = switch,true,tag=网易云音乐-[隐藏底部]漫游标签
-DT = switch,false,tag=网易云音乐-[隐藏底部]笔记标签
-FX = switch,true,tag=网易云音乐-[隐藏底部]发现标签
-PRGG = switch,true,tag=网易云音乐-[隐藏首页]问候语
-PRRK = switch,false,tag=网易云音乐-[隐藏首页]排行榜
-PRDRD = switch,false,tag=网易云音乐-[隐藏首页]每日推荐
-PRSCVPT = switch,false,tag=网易云音乐-[隐藏首页]推荐歌单
-PRST = switch,false,tag=网易云音乐-[隐藏首页]最近常听
-PRRR = switch,true,tag=网易云音乐-[隐藏首页]雷达歌单
-HMPR = switch,false,tag=网易云音乐-[隐藏首页]音乐合伙人
-PRMST = switch,true,tag=网易云音乐-[隐藏首页]推荐专属歌单
-PRCN = switch,true,tag=网易云音乐-[隐藏首页]你的专属歌单
-whyiyyybyt_enable = switch,true,false,tag=网易云音乐-脚本开关
-
 whyiyzdccidm_enable = switch,true,false,tag=网易有道词典-脚本开关
 wfnibovj_enable = switch,true,false,tag=温尼伯站-脚本开关
 xnmiuhig_enable = switch,true,false,tag=小米商城-脚本开关
@@ -4946,12 +4879,7 @@ IP-CIDR, 59.111.239.62/32, REJECT, no-resolve
 IP-CIDR, 115.236.121.51/32, REJECT, no-resolve
 IP-CIDR, 115.236.121.195/32, REJECT, no-resolve
 
-# > 网易云音乐
-DOMAIN, iadmusicmat.music.126.net, REJECT
-DOMAIN, iadmat.nosdn.127.net, REJECT
-DOMAIN, iadmatapk.nosdn.127.net, REJECT
-DOMAIN, httpdns.n.netease.com, REJECT
-DOMAIN, httpdns.music.163.com, REJECT
+
 
 
 
@@ -7493,17 +7421,7 @@ https://support.you.163.com/appversync/check.do reject
 ^https?:\/\/sp\.kaola\.com\/api\/openad reject-200
 ^https?:\/\/gw\.kaola\.com\/gw\/dgmobile\/newOpenAd reject
 
-# > 网易云音乐
-# hostname = ipv4.music.163.com, interface.music.163.com, interface3.music.163.com, interface9.music.163.com
-# 屏蔽广告
-https?:\/\/(ipv4|interface\d?)\.music\.163.com\/e?api\/ad reject-dict
-# 今日运势 商城 Beat专区 音乐收藏家 | type:ACTIVITY | 低至5.2折
-^https?:\/\/interface\d?\.music\.163\.com\/w?e?api\/(side-bar\/mini-program\/music-service\/account|delivery\/(batch-deliver|deliver)|moment\/tab\/info\/get|yunbei\/account\/entrance\/get) reject-dict
-# 播放页歌名下方∶乐迷团｜关注｜播放页提示｜音乐应用红点｜播放提示
-^https?:\/\/interface\d?\.music\.163\.com\/eapi\/(resource\/comments?\/musiciansaid|community\/friends\/fans-group\/artist\/group\/get|user\/sub\/artist|music\/songshare\/text\/recommend\/get|mine\/applet\/redpoint|resniche\/position\/play\/new\/get) reject-dict
-# 搜索页热搜卡片｜猜你喜欢｜我的应用下方提醒
-^https?:\/\/interface\d?\.music\.163.com\/w?e?api\/(search\/(chart|default|rcmd\/keyword|specialkeyword)|resource-exposure\/|activity\/bonus\/playpage\/time\/query) reject-dict
-^https?:\/\/interface\d?\.music\.163.com\/eapi\/(mlivestream\/entrance\/playpage|link\/(position\/show\/strategy|scene\/show)|ios\/version|v\d\/content\/exposure\/comment\/banner) reject-dict
+
 
 # > 网易邮箱
 # hostname = *.music.126.net, img1.126.net, www.icourse163.org, nex.163.com, g1.163.com, client.mail.163.com, c.m.163.com, interface*.music.163.com
@@ -8959,24 +8877,7 @@ http-response ^https?:\/\/app02\.vgtime\.com:8080\/vgtime-app\/api\/v2\/init\/ad
 # > 微信解除链接限制
 # hostname = weixin110.qq.com, security.wechat.com
 # 微信跳过中间界面，支付宝链接、被封禁链接进行通知弹窗跳转，在微信中用快照显示被封禁的链接（可选），在微信中进行强制重定向（可选），群聊 / 扫码均可使用，可选项可在脚本 2、3 行更改，也可在 BoxJs 中更改。
-http-response ^https\:\/\/(weixin110\.qq|security.wechat)\.com\/cgi-bin\/mmspamsupport-bin\/newredirectconfirmcgi\? script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/UnblockURLinWeChat.js, requires-body=true, timeout=60, tag=UnblockURLinWeChat-解除微信链接限制, enable={lmjpxmvi_enable}
-
-# > 网易云音乐
-# mian | 热推、有话想说、分享一下、歌曲下的祝福等小提示去除 ｜ 评论区 乐迷、星评等级 关注 等 图标去除
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/(batch|v\d\/resource\/comment\/floor\/get) script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_mian, enable={whyiyyybyt_enable}
-# 伪vip
-#http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/(music-vip-membership\/client\/vip\/info|vipnewcenter\/app\/resource\/newaccountpage) script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_vip, enable={whyiyyybyt_enable}
-# tab
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/link\/home\/framework\/tab script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_tab, argument=[{MY},{DT},{FX}], enable={whyiyyybyt_enable}
-# 推荐 | home | 主页
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/(homepage\/block\/page|link\/page\/rcmd\/(resource\/show|block\/resource\/multi\/refresh)) script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_home, argument=[{PRGG},{PRRK},{PRDRD},{PRSCVPT},{PRST},{PRRR},{HMPR},{PRMST},{PRCN}], enable={whyiyyybyt_enable}
-# 发现
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/link\/page\/discovery\/resource\/show script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_fx, enable={whyiyyybyt_enable}
-# effect
-# http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/song\/play\/more\/list\/v\d script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_effect, enable={whyiyyybyt_enable}
-# 我的 MyPageBar ad
-http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/link\/position\/show\/resource script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_mybarad, enable={whyiyyybyt_enable}
-# 显示未关注你
+http-response ^https\:\/\/(weixin110\.qq|security.wechat)\.com\/cgi-bin\/mmspamsupport-bin\/newredirectconfirmcgi\? script-path=https://raw.githubusercontent.com/zZPiglet/Task/master/asset/UnblockURLinWeChat.js, requires-body=true, timeout=60, tag=UnblockURLinWeChat-解除微信链接限制, enable={
 http-response ^https?:\/\/(ipv4|interface\d?)\.music\.163\.com\/e?api\/user\/follow\/users\/mixed\/get script-path=https://raw.githubusercontent.com/Keywos/rule/main/script/wy/js/wyres.js, requires-body=true, binary-body-mode=true, timeout=20, tag=NetEaseCloudMusic_foll, enable={whyiyyybyt_enable}
 
 # > 网易有道词典
