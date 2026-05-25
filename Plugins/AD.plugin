@@ -68,11 +68,9 @@ ddmc_enable = switch,true,false,tag=叮咚买菜-脚本开关
 flightradar24_enable = switch,true,false,tag=Flightradar24-脚本开关
 fwke_enable = switch,true,false,tag=飞客茶馆-脚本开关
 ffbi_enable = switch,true,false,tag=粉笔-脚本开关
-hlzh_enable = switch,true,false,tag=航旅纵横-脚本开关
 hema_enable = switch,true,false,tag=盒马-脚本开关
 hftx_enable = switch,true,false,tag=汇付天下-脚本开关
 jhsh_enable = switch,true,false,tag=建行生活-脚本开关
-jkds_enable = switch,true,false,tag=京东-脚本开关
 jkxi_enable = switch,true,false,tag=京喜-脚本开关
 keep_enable = switch,true,false,tag=keep-脚本开关
 kkuz_enable = switch,true,false,tag=快手-脚本开关
@@ -87,7 +85,6 @@ mafgwo_enable = switch,true,false,tag=马蜂窝-脚本开关
 mdmd_enable = switch,true,false,tag=脉脉-脚本开关
 meiyou_enable = switch,true,false,tag=美柚-脚本开关
 quda_enable = switch,true,false,tag=去哒-脚本开关
-reddit_enable = switch,true,false,tag=Reddit-脚本开关
 rfrfuipk_enable = switch,true,false,tag=人人视频-脚本开关
 soul_enable = switch,true,false,tag=Soul-脚本开关
 sudaxnyr_enable = switch,true,false,tag=苏打校园APP-脚本开关
