@@ -68,7 +68,6 @@ ddmc_enable = switch,true,false,tag=叮咚买菜-脚本开关
 flightradar24_enable = switch,true,false,tag=Flightradar24-脚本开关
 fwke_enable = switch,true,false,tag=飞客茶馆-脚本开关
 ffbi_enable = switch,true,false,tag=粉笔-脚本开关
-hlzh_enable = switch,true,false,tag=航旅纵横-脚本开关
 hema_enable = switch,true,false,tag=盒马-脚本开关
 hftx_enable = switch,true,false,tag=汇付天下-脚本开关
 jhsh_enable = switch,true,false,tag=建行生活-脚本开关
@@ -1422,11 +1421,7 @@ https?:\/\/awg\.enmonster\.com\/apa\/(advert\/demand\/home\/poster|index\/advert
 # hostname = api.touker.com
 ^https?:\/\/api\.touker\.com\/v2\/IAdvertisementAPI\.queryStartAdvertisement reject-200
 
-# > 航旅纵横
-# hostname = home.umetrip.com, discardrp.umetrip.com, startup.umetrip.com, oss.umetrip.com
-# 此条存在首页横幅误杀，可以禁止MITM域名
-^https:\/\/oss\.umetrip\.com\/fs\/advert\/polite reject
-^http?:\/\/(discardrp|startup)\.umetrip\.com\/gateway\/api\/umetrip\/native reject
+
 
 # > 汇丰汇选
 # hostname = m.prod.app.hsbcfts.com.cn
@@ -4021,8 +4016,6 @@ http-response ^https?:\/\/apis\.folidaymall\.com\/online\/capi\/component\/getPa
 
 
 # >>>>>>>>>>>>>>> ✅ H ✅ <<<<<<<<<<<<<<
-# > 航旅纵横
-http-response ^http?:\/\/(114\.115\.217\.129)|(home\.umetrip\.com)\/gateway\/api\/umetrip\/native$ script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/umetrip/umetrip_ads.js, requires-body=true, timeout=60, tag=航旅纵横, enable={hlzh_enable}
 
 # > 盒马
 http-response ^https?:\/\/acs(\.|-)m\.(taobao|freshippo)\.com\/gw\/mtop\.wdk\.render\.query(?>indexpage|mypage|tabfeedstream) script-path=https://raw.githubusercontent.com/zirawell/R-Store/main/Res/Scripts/AntiAd/freshippo.js, requires-body=true, timeout=60, tag=盒马, enable={hema_enable}
@@ -4392,7 +4385,6 @@ ddmc_enable = switch,true,false,tag=叮咚买菜-脚本开关
 flightradar24_enable = switch,true,false,tag=Flightradar24-脚本开关
 fwke_enable = switch,true,false,tag=飞客茶馆-脚本开关
 ffbi_enable = switch,true,false,tag=粉笔-脚本开关
-hlzh_enable = switch,true,false,tag=航旅纵横-脚本开关
 hema_enable = switch,true,false,tag=盒马-脚本开关
 hftx_enable = switch,true,false,tag=汇付天下-脚本开关
 jhsh_enable = switch,true,false,tag=建行生活-脚本开关
@@ -5750,11 +5742,7 @@ https?:\/\/awg\.enmonster\.com\/apa\/(advert\/demand\/home\/poster|index\/advert
 # hostname = api.touker.com
 ^https?:\/\/api\.touker\.com\/v2\/IAdvertisementAPI\.queryStartAdvertisement reject-200
 
-# > 航旅纵横
-# hostname = home.umetrip.com, discardrp.umetrip.com, startup.umetrip.com, oss.umetrip.com
-# 此条存在首页横幅误杀，可以禁止MITM域名
-^https:\/\/oss\.umetrip\.com\/fs\/advert\/polite reject
-^http?:\/\/(discardrp|startup)\.umetrip\.com\/gateway\/api\/umetrip\/native reject
+
 
 # > 汇丰汇选
 # hostname = m.prod.app.hsbcfts.com.cn
@@ -8353,8 +8341,7 @@ http-response ^https?:\/\/apis\.folidaymall\.com\/online\/capi\/component\/getPa
 
 
 # >>>>>>>>>>>>>>> ✅ H ✅ <<<<<<<<<<<<<<
-# > 航旅纵横
-http-response ^http?:\/\/(114\.115\.217\.129)|(home\.umetrip\.com)\/gateway\/api\/umetrip\/native$ script-path=https://raw.githubusercontent.com/fmz200/wool_scripts/main/Scripts/umetrip/umetrip_ads.js, requires-body=true, timeout=60, tag=航旅纵横, enable={hlzh_enable}
+
 
 # > 盒马
 http-response ^https?:\/\/acs(\.|-)m\.(taobao|freshippo)\.com\/gw\/mtop\.wdk\.render\.query(?>indexpage|mypage|tabfeedstream) script-path=https://raw.githubusercontent.com/zirawell/R-Store/main/Res/Scripts/AntiAd/freshippo.js, requires-body=true, timeout=60, tag=盒马, enable={hema_enable}
