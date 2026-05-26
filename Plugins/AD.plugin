@@ -1045,10 +1045,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 ^https?:\/\/capis(-?\w*)?\.didapinche\.com\/publish\/api\/upgrade reject-dict
 ^https?:\/\/www\.didapinche\.com\/app\/adstat\/ reject-200
 
-# > 得物
-# 开屏广告 【Runestoner】分享
-^https?:\/\/app\.dewu\.com\/api\/v1\/app\/advertisement reject
-^https?:\/\/cdn\.poizon\.com\/node-common\/.*.jpg reject-200
+
 
 # > 电E宝
 # hostname = app.95598pay.com
@@ -1095,12 +1092,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 
 
 # >>>>>>>>>>>>>>> ✅ F ✅ <<<<<<<<<<<<<<
-# > 飞猪
-# hostname = acs.m.taobao.com, gw.alicdn.com
-^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.crm\.screen\.(allresource|predict) reject-dict
-^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources\/1\.0\?type=originaljson reject-img
-^https?:\/\/gw\.alicdn\.com\/mt\/ reject
-^https?:\/\/gw\.alicdn\.com\/imgextra\/\w{2}\/[\w!]+-\d-tps-\d{3}-\d{4}\.(jpg|png)$ reject
+
 
 # > 飞常准
 # hostname = app.variflight.com
@@ -5332,10 +5324,6 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 ^https?:\/\/capis(-?\w*)?\.didapinche\.com\/publish\/api\/upgrade reject-dict
 ^https?:\/\/www\.didapinche\.com\/app\/adstat\/ reject-200
 
-# > 得物
-# 开屏广告 【Runestoner】分享
-^https?:\/\/app\.dewu\.com\/api\/v1\/app\/advertisement reject
-^https?:\/\/cdn\.poizon\.com\/node-common\/.*.jpg reject-200
 
 # > 电E宝
 # hostname = app.95598pay.com
@@ -5382,12 +5370,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 
 
 # >>>>>>>>>>>>>>> ✅ F ✅ <<<<<<<<<<<<<<
-# > 飞猪
-# hostname = acs.m.taobao.com, gw.alicdn.com
-^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.fliggy\.crm\.screen\.(allresource|predict) reject-dict
-^https?:\/\/acs\.m\.taobao\.com\/gw\/mtop\.trip\.activity\.querytmsresources\/1\.0\?type=originaljson reject-img
-^https?:\/\/gw\.alicdn\.com\/mt\/ reject
-^https?:\/\/gw\.alicdn\.com\/imgextra\/\w{2}\/[\w!]+-\d-tps-\d{3}-\d{4}\.(jpg|png)$ reject
+
 
 # > 飞常准
 # hostname = app.variflight.com
