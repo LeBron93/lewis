@@ -843,9 +843,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 # hostname = api3.cls.cn
 ^https?:\/\/api3\.cls\.cn\/v1\/boot\/ad reject
 
-# > 财经杂志
-# hostname = api.caijingmobile.com
-^https?:\/\/api\.caijingmobile\.com\/(ad|advert)\/ reject
+
 
 # > 刺猬猫阅读
 # hostname = app.hbooker.com
@@ -5142,9 +5140,7 @@ http:\/\/ad\.myfriday\.cn\/d\/json\/1\.1 reject
 # hostname = api3.cls.cn
 ^https?:\/\/api3\.cls\.cn\/v1\/boot\/ad reject
 
-# > 财经杂志
-# hostname = api.caijingmobile.com
-^https?:\/\/api\.caijingmobile\.com\/(ad|advert)\/ reject
+
 
 # > 刺猬猫阅读
 # hostname = app.hbooker.com
