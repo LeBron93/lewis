@@ -4,7 +4,11 @@
  * Loon 配置（配置 → 定时任务 → 右上角 +，粘贴下面整行）：
  * cron "0 45 9 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/HotSearch.js, tag=每日热搜, timeout=60, argument="weibo", enable=true
  *
- * argument 指定要看的热搜来源（只选一个）：
+ * 来源选择（只选一个，优先级从高到低）：
+ *   1. BoxJs 可视化选择（订阅 HotSearch.boxjs.json 后，在 BoxJs 面板里点选）
+ *   2. cron 的 argument 参数
+ *   3. 默认 weibo
+ * 可选值：
  *   weibo    = 微博热搜（默认）
  *   36kr     = 36氪快讯
  *   douyin   = 抖音热搜
@@ -114,14 +118,20 @@ function notifyFail(source, err) {
   $notification.post('🔥 ' + source.name, '获取失败', '热搜数据拉取失败，请稍后重试（' + String(err || '网络错误').slice(0, 40) + '）');
 }
 
-function main() {
-  var raw = (typeof $argument !== 'undefined' && $argument) ? String($argument).split(',')[0].trim().toLowerCase() : 'weibo';
-  if (!SOURCES[raw]) {
-    $notification.post('每日热搜', '参数错误', 'argument 可选：weibo / 36kr / douyin / thepaper / zhihu（只选一个）');
-    return $done();
+function getSourceKey() {
+  var raw = '';
+  try {
+    if (typeof $persistentStore !== 'undefined') raw = $persistentStore.read('hotsearch_source') || '';
+  } catch (e) {}
+  if (!raw && typeof $argument !== 'undefined' && $argument) {
+    raw = String($argument).split(',')[0].trim().toLowerCase();
   }
+  raw = String(raw || '').trim().toLowerCase();
+  return SOURCES[raw] ? raw : 'weibo';
+}
 
-  var source = SOURCES[raw];
+function main() {
+  var source = SOURCES[getSourceKey()];
   var reqOpt = (typeof source.req === 'function') ? source.req() : source.req;
   var doRequest = (source.method === 'post') ? $httpClient.post : $httpClient.get;
   doRequest(reqOpt, function (error, response, body) {
