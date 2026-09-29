@@ -2,13 +2,14 @@
  * HotSearch.js — Loon 定时任务：每日热搜推送
  *
  * Loon 配置（配置 → 定时任务 → 右上角 +，粘贴下面整行）：
- * cron "0 45 9 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/HotSearch.js, tag=每日热搜, timeout=60, argument="weibo,baidu,douyin", enable=true
+ * cron "0 45 9 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/HotSearch.js, tag=每日热搜, timeout=60, argument="weibo", enable=true
  *
- * argument 选择热搜来源（逗号分隔，可多选）：
- *   weibo  = 微博热搜
- *   baidu  = 百度热搜
- *   douyin = 抖音热搜
- *   all    = 全部（默认）
+ * argument 指定要看的热搜来源（只选一个）：
+ *   weibo    = 微博热搜（默认）
+ *   36kr     = 36氪快讯
+ *   douyin   = 抖音热搜
+ *   thepaper = 澎湃新闻热榜
+ *   zhihu    = 知乎热榜
  *
  * 每个来源单独发一条横幅通知：标题党条目可长按展开查看，点击通知跳转对应热搜页。
  */
@@ -22,17 +23,36 @@ var SOURCES = {
     openUrl: 'https://s.weibo.com/top/summary?cate=realtimehot',
     parse: parseWeibo
   },
-  baidu: {
-    name: '百度热搜',
-    req: { url: 'https://top.baidu.com/api/board?tab=realtime', headers: { 'User-Agent': UA } },
-    openUrl: 'https://top.baidu.com/board?tab=realtime',
-    parse: parseBaidu
+  '36kr': {
+    name: '36氪快讯',
+    method: 'post',
+    req: function () {
+      return {
+        url: 'https://gateway.36kr.com/api/mis/nav/newsflash/flow',
+        headers: { 'Content-Type': 'application/json', 'User-Agent': UA },
+        body: JSON.stringify({ partner_id: 'wap', param: { siteId: 1, platformId: 2, pageSize: 20, pageEvent: 0 }, timestamp: Date.now() })
+      };
+    },
+    openUrl: 'https://www.36kr.com/newsflashes',
+    parse: parseKr36
   },
   douyin: {
     name: '抖音热搜',
     req: { url: 'https://www.iesdouyin.com/web/api/v2/hotsearch/billboard/word/', headers: { 'User-Agent': UA, 'Referer': 'https://www.douyin.com/' } },
     openUrl: 'https://www.douyin.com/',
     parse: parseDouyin
+  },
+  thepaper: {
+    name: '澎湃新闻',
+    req: { url: 'https://cache.thepaper.cn/contentapi/wwwIndex/rightSidebar', headers: { 'User-Agent': UA } },
+    openUrl: 'https://www.thepaper.cn/',
+    parse: parseThepaper
+  },
+  zhihu: {
+    name: '知乎热榜',
+    req: { url: 'https://api.zhihu.com/topstory/hot-lists/total?limit=50', headers: { 'User-Agent': UA } },
+    openUrl: 'https://www.zhihu.com/hot',
+    parse: parseZhihu
   }
 };
 
@@ -51,13 +71,33 @@ function parseWeibo(body) {
   return { items: titles, update: t ? t[1] : '' };
 }
 
-function parseBaidu(body) {
+function parseKr36(body) {
   var data = JSON.parse(body);
-  var list = (((data || {}).data || {}).cards || [])[0] || {};
-  var items = (list.content || []).slice(0, TOP_N).map(function (x) { return x.word; }).filter(Boolean);
+  if (data.code !== 0) return { items: [], update: '' };
+  var items = (((data || {}).data || {}).itemList || [])
+    .slice(0, TOP_N)
+    .map(function (x) { return ((x || {}).templateMaterial || {}).widgetTitle; })
+    .filter(Boolean);
   return { items: items, update: '' };
 }
 
+function parseThepaper(body) {
+  var data = JSON.parse(body);
+  var items = ((((data || {}).data || {}).hotNews) || [])
+    .slice(0, TOP_N)
+    .map(function (x) { return x.name; })
+    .filter(Boolean);
+  return { items: items, update: '' };
+}
+
+function parseZhihu(body) {
+  var data = JSON.parse(body);
+  var items = ((data || {}).data || [])
+    .slice(0, TOP_N)
+    .map(function (x) { return ((x || {}).target || {}).title; })
+    .filter(Boolean);
+  return { items: items, update: '' };
+}
 function parseDouyin(body) {
   var data = JSON.parse(body);
   var items = (data.word_list || []).slice(0, TOP_N).map(function (x) { return x.word; }).filter(Boolean);
@@ -75,36 +115,29 @@ function notifyFail(source, err) {
 }
 
 function main() {
-  var raw = (typeof $argument !== 'undefined' && $argument) ? String($argument).trim().toLowerCase() : 'all';
-  var keys = raw === 'all'
-    ? Object.keys(SOURCES)
-    : raw.split(',').map(function (s) { return s.trim(); }).filter(function (s) { return SOURCES[s]; });
-
-  if (!keys.length) {
-    $notification.post('每日热搜', '参数错误', 'argument 可选：weibo, baidu, douyin（逗号分隔），或 all');
+  var raw = (typeof $argument !== 'undefined' && $argument) ? String($argument).split(',')[0].trim().toLowerCase() : 'weibo';
+  if (!SOURCES[raw]) {
+    $notification.post('每日热搜', '参数错误', 'argument 可选：weibo / 36kr / douyin / thepaper / zhihu（只选一个）');
     return $done();
   }
 
-  var i = 0;
-  (function next() {
-    if (i >= keys.length) return $done();
-    var key = keys[i++];
-    var source = SOURCES[key];
-    $httpClient.get(source.req, function (error, response, body) {
-      if (error || !body) {
-        notifyFail(source, error);
-        return next();
-      }
-      try {
-        var result = source.parse(body);
-        if (result.items.length) notify(source, result);
-        else notifyFail(source, '数据为空');
-      } catch (e) {
-        notifyFail(source, e && e.message);
-      }
-      next();
-    });
-  })();
+  var source = SOURCES[raw];
+  var reqOpt = (typeof source.req === 'function') ? source.req() : source.req;
+  var doRequest = (source.method === 'post') ? $httpClient.post : $httpClient.get;
+  doRequest(reqOpt, function (error, response, body) {
+    if (error || !body) {
+      notifyFail(source, error);
+      return $done();
+    }
+    try {
+      var result = source.parse(body);
+      if (result.items.length) notify(source, result);
+      else notifyFail(source, '数据为空');
+    } catch (e) {
+      notifyFail(source, e && e.message);
+    }
+    $done();
+  });
 }
 
 main();
