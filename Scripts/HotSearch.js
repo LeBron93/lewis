@@ -14,6 +14,8 @@
  *   douyin   = 抖音热搜
  *   thepaper = 澎湃新闻热榜
  *   zhihu    = 知乎热榜
+ *   sspai    = 少数派热门
+ *   caixin   = 财新要闻
  *
  * 每个来源单独发一条横幅通知：标题党条目可长按展开查看，点击通知跳转对应热搜页。
  */
@@ -57,6 +59,18 @@ var SOURCES = {
     req: { url: 'https://api.zhihu.com/topstory/hot-lists/total?limit=50', headers: { 'User-Agent': UA } },
     openUrl: 'https://www.zhihu.com/hot',
     parse: parseZhihu
+  },
+  sspai: {
+    name: '少数派热门',
+    req: { url: 'https://sspai.com/api/v1/article/tag/page/get?limit=10&offset=0&tag=%E7%83%AD%E9%97%A8%E6%96%87%E7%AB%A0', headers: { 'User-Agent': UA, 'Referer': 'https://sspai.com/' } },
+    openUrl: 'https://sspai.com/',
+    parse: parseSspai
+  },
+  caixin: {
+    name: '财新要闻',
+    req: { url: 'https://gateway.caixin.com/api/extapi/homeInterface.jsp?subject=100589266&start=1&count=10&picdim=_266_177&type=2&callback=cb', headers: { 'User-Agent': UA, 'Referer': 'https://www.caixin.com/' } },
+    openUrl: 'https://www.caixin.com/',
+    parse: parseCaixin
   }
 };
 
@@ -105,6 +119,26 @@ function parseZhihu(body) {
 function parseDouyin(body) {
   var data = JSON.parse(body);
   var items = (data.word_list || []).slice(0, TOP_N).map(function (x) { return x.word; }).filter(Boolean);
+  return { items: items, update: '' };
+}
+
+function parseSspai(body) {
+  var data = JSON.parse(body);
+  var items = ((data || {}).data || [])
+    .slice(0, TOP_N)
+    .map(function (x) { return x.title; })
+    .filter(Boolean);
+  return { items: items, update: '' };
+}
+
+function parseCaixin(body) {
+  var m = String(body).match(/\(\s*(\{[\s\S]*\})\s*\)/);
+  if (!m) return { items: [], update: '' };
+  var data = JSON.parse(m[1]);
+  var items = ((data || {}).datas || [])
+    .slice(0, TOP_N)
+    .map(function (x) { return x.desc; })
+    .filter(Boolean);
   return { items: items, update: '' };
 }
 
