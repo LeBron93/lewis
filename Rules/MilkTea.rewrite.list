@@ -1,0 +1,12 @@
+# 奶茶签到 · 自动抓取 token
+# Loon → 配置 → 重写 → 右上角 → 引用，粘贴本文件 URL 订阅
+# 订阅后打开对应小程序点一次"签到"，token 自动保存并弹通知确认，无需手动抓包
+# 前提：Loon 的 MitM 已开启且证书已在 iPhone 上信任
+
+[rewrite_local]
+^https:\/\/mxsa\.mxbc\.net\/api\/v1\/customer url script-request-header https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MilkTeaCapture.js, tag=奶茶token抓取, enabled=true
+^https:\/\/tm-web\.pin-dao\.cn\/user\/ url script-request-header https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MilkTeaCapture.js, tag=奶茶token抓取, enabled=true
+^https:\/\/webapi2\.qmai\.cn\/web\/seller\/oauth\/flash-sale-login url script-response-body https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MilkTeaCapture.js, tag=奶茶token抓取, enabled=true
+
+[mitm]
+hostname = mxsa.mxbc.net, tm-web.pin-dao.cn, webapi2.qmai.cn
