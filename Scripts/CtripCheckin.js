@@ -13,9 +13,9 @@
  * cticket 抓取（两种方式）：
  *   A. 免抓包自动获取（推荐）：在 Loon「配置 → 重写」引用订阅
  *      https://raw.githubusercontent.com/LeBron93/lewis/main/Rules/Ctrip.rewrite.list
- *      确认 MitM 已开启且证书已信任，然后打开携程 App 随便逛一下，
- *      收到「cticket 已自动保存」通知即成功。
- *   B. 手动：Loon 开 MITM 后打开携程 App，在「请求记录」里找 Host 为 m.ctrip.com 的请求，
+ *      确认 MitM 已开启且证书已信任，然后打开「携程旅行」微信小程序登录一次
+ *      （或随便逛一下），收到「cticket 已自动保存」通知即成功。
+ *   B. 手动：Loon 开 MITM 后打开携程微信小程序，在「请求记录」里找 Host 为 m.ctrip.com 的请求，
  *      复制请求头 Cookie 里的 cticket= 后面的值（不要 cticket= 本身）。
  *
  * 注意：cticket 会过期（一般几周），失效后脚本会提示，重新抓一次即可。
