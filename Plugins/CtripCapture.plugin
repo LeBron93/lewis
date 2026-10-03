@@ -1,0 +1,13 @@
+#!name=✈️ 携程 token 抓取
+#!desc=打开携程 App 随便逛一下，cticket 自动保存到本地，无需手动抓包。配合「携程签到」插件或定时任务使用。
+#!author=@LeBron93
+#!homepage=https://github.com/LeBron93/lewis
+#!tag=签到,携程,抓包
+
+# ============ cticket 自动抓取（打开携程 App 逛一下即保存） ============
+
+[rewrite_local]
+^https:\/\/m\.ctrip\.com\/ url script-request-header https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/CtripCapture.js, tag=携程token抓取, enabled=true
+
+[mitm]
+hostname = m.ctrip.com
