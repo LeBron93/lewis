@@ -5,7 +5,7 @@
 * cron "0 45 8 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MovieHot.js, tag=热映电影, timeout=60, enable=true
 *
 * 每天 8:45 推送一条横幅通知：
-* 国内热映 Top 8（猫眼在映，片名 + 猫眼评分）
+* 国内热映 Top 8（猫眼在映名单，片名 + 豆瓣评分；豆瓣暂无评分的不显示评分）
 * 国内票房（Box Office Mojo 中国周末冠军 + 周末票房/美元）
 * 北美票房 Top 5（豆瓣，片名 + 周票房/美元）
 * 欧洲票房（Box Office Mojo 英/法/德/意/西周末冠军 + 周末票房/美元）
@@ -16,6 +16,7 @@
 var UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1';
 
 var CN_URL = 'https://m.maoyan.com/ajax/movieOnInfoList?token=';
+var DB_URL = 'https://movie.douban.com/cinema/nowplaying/beijing/';
 var US_URL = 'https://movie.douban.com/chart';
 var INTL_URL = 'https://www.boxofficemojo.com/intl/';
 var OPEN_URL = 'https://m.maoyan.com/';
@@ -36,7 +37,26 @@ var AREAS = {
 };
 var EU_KEYS = ['United Kingdom', 'France', 'Germany', 'Italy', 'Spain'];
 
-function parseCn(body) {
+function normTitle(s) {
+  return String(s).replace(/[\s\u200b-\u200f\ufeff]/g, '');
+}
+
+// 解析豆瓣正在上映页：data-title + data-score → {归一化片名: 评分}（0 分=暂无评分，跳过）
+function parseDouban(body) {
+  var map = {};
+  try {
+    var html = String(body);
+    var re = /data-title="([^"]+)"[\s\S]{0,500}?data-score="([^"]+)"/g;
+    var m;
+    while ((m = re.exec(html)) !== null) {
+      var score = parseFloat(m[2]);
+      if (score > 0 && !map[normTitle(m[1])]) map[normTitle(m[1])] = m[2];
+    }
+  } catch (e) {}
+  return map;
+}
+
+function parseCn(body, dbScores) {
   try {
     var data = JSON.parse(body);
     return (data.movieList || [])
@@ -44,7 +64,8 @@ function parseCn(body) {
       .slice(0, CN_N)
       .map(function (m) {
         var s = m.nm;
-        if (m.sc > 0) s += ' ' + m.sc + '分';
+        var db = dbScores ? dbScores[normTitle(m.nm)] : null;
+        if (db) s += ' 豆瓣' + db + '分';
         return s;
       });
   } catch (e) { return []; }
@@ -104,9 +125,10 @@ function fmtUSD(s) {
   return '$' + Math.round(n);
 }
 
-function finish(cnBody, usBody, intlBody) {
+function finish(cnBody, dbBody, usBody, intlBody) {
   try {
-    var cn = cnBody ? parseCn(cnBody) : [];
+    var dbScores = dbBody ? parseDouban(dbBody) : {};
+    var cn = cnBody ? parseCn(cnBody, dbScores) : [];
     var us = usBody ? parseUs(usBody) : { items: [], update: '' };
     var intl = intlBody ? parseIntl(intlBody) : {};
 
@@ -157,15 +179,16 @@ function finish(cnBody, usBody, intlBody) {
 }
 
 function main() {
-  var bodies = { cn: null, us: null, intl: null };
-  var pending = 3;
+  var bodies = { cn: null, db: null, us: null, intl: null };
+  var pending = 4;
   function one(key, opts) {
     $httpClient.get(opts, function (err, resp, body) {
       bodies[key] = (!err && body) ? body : null;
-      if (--pending === 0) finish(bodies.cn, bodies.us, bodies.intl);
+      if (--pending === 0) finish(bodies.cn, bodies.db, bodies.us, bodies.intl);
     });
   }
   one('cn', { url: CN_URL, headers: { 'User-Agent': UA, 'Referer': 'https://m.maoyan.com/' } });
+  one('db', { url: DB_URL, headers: { 'User-Agent': UA, 'Referer': 'https://movie.douban.com/' } });
   one('us', { url: US_URL, headers: { 'User-Agent': UA, 'Referer': 'https://movie.douban.com/' } });
   one('intl', { url: INTL_URL, headers: { 'User-Agent': UA, 'Referer': 'https://www.boxofficemojo.com/' } });
 }
@@ -174,5 +197,5 @@ if (typeof $httpClient !== 'undefined') { main(); }
 
 // ---- 本地测试用（Loon 里不会执行） ----
 if (typeof $httpClient === 'undefined' && typeof module !== 'undefined') {
-  module.exports = { parseCn: parseCn, parseUs: parseUs, parseIntl: parseIntl, fmtUSD: fmtUSD };
+  module.exports = { parseCn: parseCn, parseDouban: parseDouban, normTitle: normTitle, parseUs: parseUs, parseIntl: parseIntl, fmtUSD: fmtUSD };
 }
