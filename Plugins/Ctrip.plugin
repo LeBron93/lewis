@@ -1,0 +1,18 @@
+#!name=✈️ 携程签到
+#!desc=每天 9:00 自动签到领积分。首次使用：打开携程 App 随便逛一下，cticket 自动保存，无需手动抓包。
+#!author=@LeBron93
+#!homepage=https://github.com/LeBron93/lewis
+#!tag=签到,携程,旅行
+
+# ============ cticket 自动抓取（打开携程 App 逛一下即保存） ============
+
+[rewrite_local]
+^https:\/\/m\.ctrip\.com\/ url script-request-header https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/CtripCapture.js, tag=携程token抓取, enabled=true
+
+[mitm]
+hostname = m.ctrip.com
+
+# ============ 每天 9:00 自动签到 ============
+
+[Script]
+cron "0 0 9 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/CtripCheckin.js, tag=携程签到, timeout=60, enable=true
