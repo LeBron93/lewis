@@ -1,0 +1,7 @@
+# Ctrip.rewrite.list — 携程 cticket 自动抓取（配合 Scripts/CtripCapture.js）
+
+[rewrite_local]
+^https:\/\/m\.ctrip\.com\/ url script-request-header https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/CtripCapture.js, tag=携程token抓取, enabled=true
+
+[mitm]
+hostname = m.ctrip.com
