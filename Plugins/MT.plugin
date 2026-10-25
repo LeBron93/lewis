@@ -1,4 +1,5 @@
 #!name = 美团App 12.67.403
+#!icon = https://raw.githubusercontent.com/LeBron93/lewis/main/Icons/meituan-icon.png
 #!desc = 美团 App 净化：去开屏、首页推荐流、我的页交叉推荐、搜索热词与小喇叭配置等，屏蔽 httpdns 与广告域名。
 #!author = TG@ZenMoFiShi
 #!homepage = https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/MT.snippet
