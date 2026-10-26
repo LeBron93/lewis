@@ -55,6 +55,7 @@ ffbi_enable = switch,true,false,tag=粉笔-脚本开关
 hema_enable = switch,true,false,tag=盒马-脚本开关
 hftx_enable = switch,true,false,tag=汇付天下-脚本开关
 jhsh_enable = switch,true,false,tag=建行生活-脚本开关
+jkxi_enable = switch,true,false,tag=京喜-脚本开关
 keep_enable = switch,true,false,tag=keep-脚本开关
 kxke_enable = switch,true,false,tag=夸克-脚本开关
 kuwoybyt_enable = switch,true,false,tag=酷我音乐-脚本开关
