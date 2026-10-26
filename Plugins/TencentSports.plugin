@@ -3,6 +3,20 @@
 #!author = Hey-sayiwanna
 #!homepage = https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsAdBlock.sgmodule
 # Loon 转换版：规则与脚本均来自 TencentSportsAdBlock.sgmodule；两脚本仅用 $request/$response/$done，Loon 无需改写，脚本仍引用原作者远程地址；Surge 的 Map Local（空 body + 200 + application/proto 头）转成 Loon 的 reject-200（空 body + 200，不带自定义头）；MITM 去掉 Surge 专用的 %APPEND%
+# 2026-10-26 补：原模块只覆盖腾讯体育自有接口，开屏广告实际走腾讯广告平台（优量汇 GDT）SDK；补上 QingRex 广告平台拦截器里的腾讯广告域名直连拦截（无需 MITM），与原作者要求的前置基础模块同款思路；[Rule] 在 Loon 里对全部走代理的流量生效
+
+[Rule]
+DOMAIN-SUFFIX,gdt.qq.com,REJECT
+DOMAIN,sdk.e.qq.com,REJECT
+DOMAIN,tangram.e.qq.com,REJECT
+DOMAIN,pgdt.gtimg.cn,REJECT
+DOMAIN,pgdt.ugdtimg.com,REJECT
+DOMAIN,qzs.gdtimg.com,REJECT
+DOMAIN,qzs.qq.com,REJECT
+DOMAIN-SUFFIX,ugdtimg.com,REJECT
+DOMAIN,adsmind.gdtimg.com,REJECT
+DOMAIN,adsmind.ugdtimg.com,REJECT
+DOMAIN,ads.privacy.qq.com,REJECT
 
 [Rewrite]
 ^https:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig.* - reject-200
