@@ -1,24 +1,38 @@
 #!name = 腾讯体育去广告
 #!desc = 拦截开屏广告，移除首页信息流、会员推广、赛事页横幅、悬浮运营组件、金币任务会员弹层及赛事 PageCard 强制弹窗
 #!author = Hey-sayiwanna
-#!homepage = https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsAdBlock.sgmodule
-# Loon 转换版：规则与脚本均来自 TencentSportsAdBlock.sgmodule；两脚本仅用 $request/$response/$done，Loon 无需改写，脚本仍引用原作者远程地址；Surge 的 Map Local（空 body + 200 + application/proto 头）转成 Loon 的 reject-200（空 body + 200，不带自定义头）；MITM 去掉 Surge 专用的 %APPEND%
-# 2026-10-26 补：原模块只覆盖腾讯体育自有接口，开屏广告实际走腾讯广告平台（优量汇 GDT）SDK；补上 QingRex 广告平台拦截器里的腾讯广告域名直连拦截（无需 MITM），与原作者要求的前置基础模块同款思路；[Rule] 在 Loon 里对全部走代理的流量生效
-# 2026-10-26 再补：gdtimg.com 与 e.qq.com 改按后缀整段拦截，覆盖 GDT 素材 CDN 与广告平台全部子域名，避免漏掉个别子域名
+#!homepage = https://github.com/Hey-sayiwanna/TencentSports-Surge
+# Loon 重写版：以 Hey-sayiwanna/TencentSports-Surge 为准，从头重写，共三层。
+# 第一层（基础层，对齐原作者要求的前置模块）：拦截 HTTPDNS，强制 App 走 Loon 的 DNS，否则域名规则会被 HTTPDNS 直连 IP 绕过。
+# 第二层（广告平台层，对齐原作者要求的前置模块）：腾讯优量汇 GDT 域名直连拦截，开屏广告走的就是这一层。
+# 第三层（体育 App 自身层，原模块本体）：Rewrite + Script + MITM。两脚本仅用 $request/$response/$done，Loon 原生兼容，无需改写，仍引用原作者远程地址；Surge 的 Map Local（空 body + 200 + application/proto 头）转成 Loon 的 reject-200（空 body + 200，不带自定义头）；MITM 去掉 Surge 专用的 %APPEND%。
+# 注意：仓库里「去广告原理代码参考」下的 5 个旧脚本已被原作者整合进上面 2 个脚本，不重复引用，避免同一响应被多个脚本改写。
 
 [Rule]
+# —— 第一层：HTTPDNS 拦截 ——
+DOMAIN-KEYWORD,httpdns,REJECT
+DOMAIN-KEYWORD,httpsdns,REJECT
+USER-AGENT,httpdns*,REJECT
+USER-AGENT,httpsdns*,REJECT
+USER-AGENT,Httpdns*,REJECT
+USER-AGENT,Httpsdns*,REJECT
+URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/v?[0-9]+)?\/(?:sign_)?(?:(?:d|ss)[46]?|resolve)\?,REJECT
+URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d+\/httpdns\/,REJECT
+IP-CIDR,119.29.29.98/32,REJECT,no-resolve
+IP-CIDR,119.29.29.99/32,REJECT,no-resolve
+IP-CIDR,203.205.129.102/32,REJECT,no-resolve
+IP-CIDR,203.205.234.132/32,REJECT,no-resolve
+DOMAIN,httpdns.kg.qq.com,REJECT
+DOMAIN,dns.weixin.qq.com,REJECT
+DOMAIN,aedns.weixin.qq.com,REJECT
+DOMAIN,twns.p2ptun.qq.com,REJECT
+DOMAIN,tp2p.kg.qq.com,REJECT
+# —— 第二层：腾讯广告平台（优量汇 GDT）——
 DOMAIN-SUFFIX,gdt.qq.com,REJECT
 DOMAIN-SUFFIX,e.qq.com,REJECT
 DOMAIN-SUFFIX,gdtimg.com,REJECT
-DOMAIN,sdk.e.qq.com,REJECT
-DOMAIN,tangram.e.qq.com,REJECT
-DOMAIN,pgdt.gtimg.cn,REJECT
-DOMAIN,pgdt.ugdtimg.com,REJECT
-DOMAIN,qzs.gdtimg.com,REJECT
-DOMAIN,qzs.qq.com,REJECT
 DOMAIN-SUFFIX,ugdtimg.com,REJECT
-DOMAIN,adsmind.gdtimg.com,REJECT
-DOMAIN,adsmind.ugdtimg.com,REJECT
+DOMAIN,qzs.qq.com,REJECT
 DOMAIN,ads.privacy.qq.com,REJECT
 
 [Rewrite]
