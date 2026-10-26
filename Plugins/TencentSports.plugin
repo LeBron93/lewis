@@ -1,0 +1,16 @@
+#!name = 腾讯体育去广告
+#!desc = 拦截开屏广告，移除首页信息流、会员推广、赛事页横幅、悬浮运营组件、金币任务会员弹层及赛事 PageCard 强制弹窗
+#!author = Hey-sayiwanna
+#!homepage = https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsAdBlock.sgmodule
+# Loon 转换版：规则与脚本均来自 TencentSportsAdBlock.sgmodule；两脚本仅用 $request/$response/$done，Loon 无需改写，脚本仍引用原作者远程地址；Surge 的 Map Local（空 body + 200 + application/proto 头）转成 Loon 的 reject-200（空 body + 200，不带自定义头）；MITM 去掉 Surge 专用的 %APPEND%
+
+[Rewrite]
+^https:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig.* - reject-200
+^https:\/\/config\.ab\.qq\.com\/tab\/GetTabToggle.* - reject-200
+
+[Script]
+http-response ^https:\/\/(?:app\.sports\.qq\.com\/(?:feeds\/list|m\/matchAfter\/stats|match\/adBanner)\?|shequ\.sports\.qq\.com\/topic\/detail\?|film\.video\.qq\.com\/x\/sports-vip-channel\/(?:\?.*)?$) script-path=https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsAdBlock.js, requires-body=true, tag=腾讯体育去广告
+http-response ^https:\/\/(?:app\.sports\.qq\.com\/(?:trpc\.sports_resource\.cgi\.ResourceCGI\/MatchWidgets|vaccess\/trpc\.sports_resource\.cgi\.ResourceCGI\/ColumnWidget|vaccess\/trpc\.sportsbasic\.column\.Column\/GetColumn)|sports\.qq\.com\/sapp\/h5msg\.htm|matchweb\.sports\.qq\.com\/trpc\.dorae\.coin\.Coin\/CoinLayer)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsFloatBlock.js, requires-body=true, tag=腾讯体育浮层清理
+
+[MITM]
+hostname = app.sports.qq.com, config.ab.qq.com, shequ.sports.qq.com, film.video.qq.com, sports.qq.com, matchweb.sports.qq.com
