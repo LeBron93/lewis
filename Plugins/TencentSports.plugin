@@ -1,5 +1,6 @@
 #!name = 腾讯体育去广告
 #!desc = 拦截开屏广告，移除首页信息流、会员推广、赛事页横幅、悬浮运营组件、金币任务会员弹层及赛事 PageCard 强制弹窗
+# Loon 插件版 v5（2026-11-02，按 Hey-sayiwanna/TencentSports-Surge 的 TencentSportsAdBlock.sgmodule 原样转换，blob SHA 6fdad93dcc4818bc02b7c126267ed9aaf2f24fec；脚本全文已读：两脚本仅用 $request.url/$response.body/$done/console.log，无 QX 专属 API，Loon 原生兼容，无需垫片，仍引用原作者远程地址）。新增：[Host] 系统 DNS 段、l.qq.com reject-dict、MITM 加 *.l.qq.com；原 [Rule] HTTPDNS+GDT 层保留。
 #!author = Hey-sayiwanna
 #!homepage = https://github.com/Hey-sayiwanna/TencentSports-Surge
 # Loon 重写版：以 Hey-sayiwanna/TencentSports-Surge 为准，从头重写，共三层。
@@ -35,7 +36,21 @@ DOMAIN-SUFFIX,ugdtimg.com,REJECT
 DOMAIN,qzs.qq.com,REJECT
 DOMAIN,ads.privacy.qq.com,REJECT
 
+[Host]
+# 腾讯国内直连域名交给系统 DNS（当前 Wi-Fi / 运营商分配的 DNS）解析，避免配置里的境外 / 加密 DNS 解析慢或被 Wi-Fi 拦截导致首页转圈；不影响节点域名与其他域名（原样抄自 sgmodule）
+qq.com = server:system
+*.qq.com = server:system
+*.gtimg.com = server:system
+*.gtimg.cn = server:system
+*.qpic.cn = server:system
+*.qlogo.cn = server:system
+tencent.com = server:system
+*.tencent.com = server:system
+*.tencent-cloud.net = server:system
+*.cdn-go.cn = server:system
+
 [Rewrite]
+^https?:\/\/[^\/]+\.l\.qq\.com\/ - reject-dict
 ^https:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig.* - reject-200
 ^https:\/\/config\.ab\.qq\.com\/tab\/GetTabToggle.* - reject-200
 
@@ -44,4 +59,4 @@ http-response ^https:\/\/(?:app\.sports\.qq\.com\/(?:feeds\/list|m\/matchAfter\/
 http-response ^https:\/\/(?:app\.sports\.qq\.com\/(?:trpc\.sports_resource\.cgi\.ResourceCGI\/MatchWidgets|vaccess\/trpc\.sports_resource\.cgi\.ResourceCGI\/ColumnWidget|vaccess\/trpc\.sportsbasic\.column\.Column\/GetColumn)|sports\.qq\.com\/sapp\/h5msg\.htm|matchweb\.sports\.qq\.com\/trpc\.dorae\.coin\.Coin\/CoinLayer)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsFloatBlock.js, requires-body=true, tag=腾讯体育浮层清理
 
 [MITM]
-hostname = app.sports.qq.com, config.ab.qq.com, shequ.sports.qq.com, film.video.qq.com, sports.qq.com, matchweb.sports.qq.com
+hostname = app.sports.qq.com, config.ab.qq.com, shequ.sports.qq.com, film.video.qq.com, sports.qq.com, matchweb.sports.qq.com, *.l.qq.com
