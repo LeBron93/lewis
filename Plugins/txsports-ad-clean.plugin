@@ -1,43 +1,14 @@
 #!name = 腾讯体育净化（ZenmoFeiShi）
-#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 适配版 v2：脚本层同 v1，新增 HTTPDNS+GDT 直连拦截一层，未在真机验证。
+#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 插件版 v3：严格按原 QX snippet，只含 8 条脚本规则 + 4 个 MITM 域名，不加其他层。
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
-# v2（2026-11-01，用户报 v1 没效果后）：只加一层 [Rule]，Script/MITM 原样不动。这一层照抄旧 TencentSports.plugin v4 的 HTTPDNS + GDT 拦截：HTTPDNS 会让 App 绕过 Loon 直接拿 IP，GDT 是腾讯广告平台，开屏可能走这一层不走体育接口。
-# v1 模拟验证：垫片脚本在 Node 模拟里 protobuf/JSON/XML 四个分支都能改写 body，脚本逻辑本身没发现问题；真机没效果更可能在请求根本没进 Loon（HTTPDNS/QUIC/旧插件冲突/缓存），或开屏走 GDT。
-# 测试时仍必须先停用旧 TencentSports.plugin，否则旧插件的 reject-200 会拦掉 GetTabRemoteConfig。
-# Loon 适配说明（2026-11-01，用户确认信任原作者来源后制作）：
-# 原 QX snippet：ZenmoFeiShi/Qx txsports-ad-clean.snippet（注明更新于 2026-11-01），8 条 script-response-body 规则 + 4 个 hostname，全部指向同一脚本 txsports-ad-clean.js。
-# 本插件只做这一层，不叠加旧 TencentSports.plugin 的 HTTPDNS/GDT/Rewrite 层；两个插件同时启用会冲突（旧插件的 reject-200 会直接拦掉本插件要改写的 GetTabRemoteConfig 请求），测试时必须先停用旧插件。
-# 脚本改动仅限平台 I/O 垫片（见 Scripts/txsports-ad-clean-loon.js 文件头）：$response.statusCode->$response.status、$response.bodyBytes->$response.body、$done bodyBytes->$done body；其余逻辑原样，副本与源文件不是逐字节相同。
-# 仅 GetTabRemoteConfig（protobuf 二进制）一条开 binary-body-mode=true；其余 7 条保持 binary-body-mode=false，取字符串 body。QX 的 url-and-header 在 Loon 里对应 requires-body=true，脚本内自行读 $request.headers 判 UA。
-# 旧插件 TencentSports.plugin 未动，可回滚。
-
-[Rule]
-# —— HTTPDNS 拦截（照抄 TencentSports.plugin v4）——
-DOMAIN-KEYWORD,httpdns,REJECT
-DOMAIN-KEYWORD,httpsdns,REJECT
-USER-AGENT,httpdns*,REJECT
-USER-AGENT,httpsdns*,REJECT
-USER-AGENT,Httpdns*,REJECT
-USER-AGENT,Httpsdns*,REJECT
-URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/v?[0-9]+)?\/(?:sign_)?(?:(?:d|ss)[46]?|resolve)\?,REJECT
-URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d+\/httpdns\/,REJECT
-IP-CIDR,119.29.29.98/32,REJECT,no-resolve
-IP-CIDR,119.29.29.99/32,REJECT,no-resolve
-IP-CIDR,203.205.129.102/32,REJECT,no-resolve
-IP-CIDR,203.205.234.132/32,REJECT,no-resolve
-DOMAIN,httpdns.kg.qq.com,REJECT
-DOMAIN,dns.weixin.qq.com,REJECT
-DOMAIN,aedns.weixin.qq.com,REJECT
-DOMAIN,twns.p2ptun.qq.com,REJECT
-DOMAIN,tp2p.kg.qq.com,REJECT
-# —— 腾讯广告平台（优量汇 GDT）——
-DOMAIN-SUFFIX,gdt.qq.com,REJECT
-DOMAIN-SUFFIX,e.qq.com,REJECT
-DOMAIN-SUFFIX,gdtimg.com,REJECT
-DOMAIN-SUFFIX,ugdtimg.com,REJECT
-DOMAIN,qzs.qq.com,REJECT
-DOMAIN,ads.privacy.qq.com,REJECT
+# v3（2026-11-01，按用户“按这个版本来修改，适用于 Loon 插件”重做）：
+# live 核对：ZenmoFeiShi/Qx txsports-ad-clean.snippet，blob SHA 8a4c996332363d05727cb4b44d47496c69ab7ce0，#!update 2026-11-1；
+#  txsports-ad-clean.js live SHA-256 4e226de5408e8a6fb25bc5ebfd1cb802bc89097d21dc3c1e85c12f3f3d56fab4，与 v1 制作时一致，上游无新改动，脚本文件不动。
+#  本版只含 snippet 原有内容：8 条 script-response-body 规则（全部指向同一脚本）+ hostname 4 个域名；v2 加的 HTTPDNS + GDT [Rule] 层已去掉，不叠加任何旧插件的层。
+#  脚本为本地 Loon 垫片副本 Scripts/txsports-ad-clean-loon.js，仅改 3 处平台 I/O：$response.statusCode->$response.status、$response.bodyBytes->$response.body、$done bodyBytes->$done body；其余逻辑原样，副本与源文件不是逐字节相同，Node 模拟里 protobuf/JSON/XML 四分支均能改写 body。
+#  仅 GetTabRemoteConfig（protobuf 二进制）一条开 binary-body-mode=true；其余 7 条 binary-body-mode=false，取字符串 body。QX 的 url-and-header 在 Loon 里对应 requires-body=true，脚本内自行读 $request.headers 判 UA。
+#  旧插件 TencentSports.plugin 未动；两个插件同时启用会冲突（旧插件的 reject-200 会拦掉 GetTabRemoteConfig），测试时必须先停用旧插件。未在真机验证。
 
 [Script]
 http-response ^https:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=true, tag=腾讯体育净化
