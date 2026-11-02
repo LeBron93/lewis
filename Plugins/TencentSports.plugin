@@ -1,6 +1,6 @@
 #!name = 腾讯体育去广告
-#!desc = 拦截开屏广告，移除首页信息流、会员推广、赛事页横幅、悬浮运营组件、金币任务会员弹层及赛事 PageCard 强制弹窗、精简我的页面与首页展示
-# Loon 插件版 v6（2026-11-02，用户要求把 ZenmoFeiShi 的“精简我的页面”并进来）：在 v5 基础上追加 Zenmo 脚本的 7 条规则（getsdkconfig、init/config、homePageV2、liveSum、multiUpdate、feeds/home|list、sports.ssp/app，规则与脚本地址原样抄自 txsports-ad-clean.plugin v5，脚本为 Scripts/txsports-ad-clean-loon.js 的 jsDelivr 固定 commit 2f3746fc）；GetTabRemoteConfig 一条未并入——本插件的 Rewrite reject-200 已拦掉该接口（开屏已确认有效），并入后脚本只能拿到空 body，改写不会生效，故保留 reject-200；feeds/list 与 Hey-sayiwanna 脚本同接口，Zenmo 规则放后面顺序执行（先过滤广告条目，再清 hotWords/adInfos/1120 栏）；MITM 加 k.ssp.qq.com、sports.ssp.qq.com。原独立插件 txsports-ad-clean.plugin 不再需要，可停用删除。
+#!desc = 拦截开屏广告，移除首页信息流、会员推广、赛事页横幅、悬浮运营组件、金币任务会员弹层及赛事 PageCard 强制弹窗
+# Loon 插件版 v7（2026-11-02，用户要求“去掉我的页面、一开始那个”）：在 v6 基础上移除全部 Zenmo 合并规则与新增的 2 个 MITM 域名，内容回到 v5（sgmodule 原样转换 + [Rule] HTTPDNS/GDT 层 + [Host] 系统 DNS 段）；Zenmo 合并版不再使用，独立插件 txsports-ad-clean.plugin 保持停用。
 # Loon 插件版 v5（2026-11-02，按 Hey-sayiwanna/TencentSports-Surge 的 TencentSportsAdBlock.sgmodule 原样转换，blob SHA 6fdad93dcc4818bc02b7c126267ed9aaf2f24fec；脚本全文已读：两脚本仅用 $request.url/$response.body/$done/console.log，无 QX 专属 API，Loon 原生兼容，无需垫片，仍引用原作者远程地址）。新增：[Host] 系统 DNS 段、l.qq.com reject-dict、MITM 加 *.l.qq.com；原 [Rule] HTTPDNS+GDT 层保留。
 #!author = Hey-sayiwanna
 #!homepage = https://github.com/Hey-sayiwanna/TencentSports-Surge
@@ -58,13 +58,6 @@ tencent.com = server:system
 [Script]
 http-response ^https:\/\/(?:app\.sports\.qq\.com\/(?:feeds\/list|m\/matchAfter\/stats|match\/adBanner)\?|shequ\.sports\.qq\.com\/topic\/detail\?|film\.video\.qq\.com\/x\/sports-vip-channel\/(?:\?.*)?$) script-path=https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsAdBlock.js, requires-body=true, tag=腾讯体育去广告
 http-response ^https:\/\/(?:app\.sports\.qq\.com\/(?:trpc\.sports_resource\.cgi\.ResourceCGI\/MatchWidgets|vaccess\/trpc\.sports_resource\.cgi\.ResourceCGI\/ColumnWidget|vaccess\/trpc\.sportsbasic\.column\.Column\/GetColumn)|sports\.qq\.com\/sapp\/h5msg\.htm|matchweb\.sports\.qq\.com\/trpc\.dorae\.coin\.Coin\/CoinLayer)(?:\?.*)?$ script-path=https://raw.githubusercontent.com/Hey-sayiwanna/TencentSports-Surge/main/TencentSportsFloatBlock.js, requires-body=true, tag=腾讯体育浮层清理
-http-response ^https:\/\/k\.ssp\.qq\.com\/getsdkconfig(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/init\/config(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/user\/homePageV2(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/m\/match\/liveSum(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/match\/multiUpdate(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/feeds\/(?:home|list)(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/sports\.ssp\.qq\.com\/app(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@2f3746fc80936a35ebc2ee8283cab52ea9320966/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
 
 [MITM]
-hostname = app.sports.qq.com, config.ab.qq.com, shequ.sports.qq.com, film.video.qq.com, sports.qq.com, matchweb.sports.qq.com, *.l.qq.com, k.ssp.qq.com, sports.ssp.qq.com
+hostname = app.sports.qq.com, config.ab.qq.com, shequ.sports.qq.com, film.video.qq.com, sports.qq.com, matchweb.sports.qq.com, *.l.qq.com
