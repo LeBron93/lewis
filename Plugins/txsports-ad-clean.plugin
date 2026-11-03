@@ -1,5 +1,5 @@
 #!name = 腾讯体育净化
-#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词、去除新闻详情页底部推广。Loon 插件版 v14 精简：仅 QUIC 拦截＋9 条脚本规则＋MITM。
+#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词、去除新闻详情页底部推广
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
 
