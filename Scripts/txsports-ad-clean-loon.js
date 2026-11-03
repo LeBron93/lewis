@@ -263,12 +263,19 @@
       return changed ? { body: JSON.stringify(o) } : {};
     }
     if (/^https?:\/\/sports\.ssp\.qq\.com\/app(?:\?|$)/.test(url)) {
-      if (!tsqxSspTargetRequest() || !o || typeof o.adList !== "string" || !o.adList) return {};
-      try { inner = JSON.parse(o.adList); } catch (e2) { return {}; }
-      if (!inner || !Array.isArray(inner.index) || !inner.index.length || !Array.isArray(inner.order) || !inner.order.length) return {};
+      // TEMP-DIAG v11d: log-only, behavior unchanged; strip in final build.
+      try {
+        var dgReq = (function () { try { var r = JSON.parse($request.body || ""); return r && r.adReqData; } catch (e3) { return null; } })();
+        var dgSlots = dgReq && Array.isArray(dgReq.slot) ? dgReq.slot.map(function (s) { return s ? String(s.loid) : "?"; }).join(",") : "-";
+        console.log("[TXDIAG] ssp adtype=" + (dgReq && dgReq.adtype) + " chid=" + (dgReq && dgReq.chid) + " launch=" + (dgReq && dgReq.launch) + " slots=[" + dgSlots + "] adList=" + (typeof o.adList === "string" ? o.adList.length : typeof o.adList));
+      } catch (e4) {}
+      if (!tsqxSspTargetRequest() || !o || typeof o.adList !== "string" || !o.adList) { console.log("[TXDIAG] ssp gate=req-fail"); return {}; }
+      try { inner = JSON.parse(o.adList); } catch (e2) { console.log("[TXDIAG] ssp gate=adlist-parse-fail"); return {}; }
+      if (!inner || !Array.isArray(inner.index) || !inner.index.length || !Array.isArray(inner.order) || !inner.order.length) { console.log("[TXDIAG] ssp gate=empty-shape"); return {}; }
       for (i = 0; i < inner.index.length; i++) {
-        if (!inner.index[i] || Number(inner.index[i].channel_id) !== 7247) return {};
+        if (!inner.index[i] || Number(inner.index[i].channel_id) !== 7247) { console.log("[TXDIAG] ssp gate=channel-mismatch idx=" + i); return {}; }
       }
+      console.log("[TXDIAG] ssp gate=PASS order-cleared");
       inner.order = [];
       o.adList = JSON.stringify(inner);
       return { body: JSON.stringify(o) };
