@@ -168,36 +168,67 @@ function cleanExtraPayload(bytes, mine) {
   return {bytes: proto.bytes, count: json.count + proto.count};
 }
 
-// TEMPORARY DIAGNOSTIC (2026-11-04): log a compact structure fingerprint per
-// response so the real payload schema can be read from a screenshot of the
-// script log. REMOVE before the final build: it logs field numbers + short
-// title strings only, never full payloads.
-function structFingerprint(bytes) {
+// TEMPORARY DIAGNOSTIC v2 (2026-11-04): deeper structure fingerprint per
+// response. REMOVE before the final build.
+function treeFingerprint(bytes) {
   try {
-    const fields = parseMessage(bytes);
-    if (!fields) return 'unparsed';
-    const top = fields.map(f => f.field).join(',');
-    let f7info = '';
-    const f7 = fields.find(f => f.field === 7 && f.wire === 2);
-    if (f7) {
-      const inner = parseMessage(f7.data);
-      if (inner) f7info = ' f7=[' + inner.map(f => f.field).join(',') + ']';
-    }
-    const labels = [];
-    const collect = (buf, depth) => {
-      if (depth > 2 || labels.length >= 8) return;
+    const parts = [];
+    const walk = (buf, path, depth) => {
+      if (depth > 4 || parts.length >= 10) return;
       const fs = parseMessage(buf);
       if (!fs) return;
+      const counts = {};
+      for (const f of fs) counts[f.field] = (counts[f.field] || 0) + 1;
+      parts.push((path || 'top') + ':[' + Object.keys(counts).map(k => counts[k] > 1 ? k + '*' + counts[k] : k).join(',') + ']');
+      if (depth >= 4) return;
+      const seen = new Set();
       for (const f of fs) {
-        if (f.wire !== 2) continue;
-        const t = bytesToUtf8(f.data);
-        if (typeof t === 'string' && t.length >= 2 && t.length <= 14 && !/[\u0000-\u001f]/.test(t) && !labels.includes(t)) labels.push(t);
-        if (labels.length < 8) collect(f.data, depth + 1);
+        if (f.wire !== 2 || seen.has(f.field)) continue;
+        seen.add(f.field);
+        walk(f.data, (path ? path + '.' : '') + f.field, depth + 1);
       }
     };
-    collect(bytes, 0);
-    return 'top=[' + top + ']' + f7info + ' labels=[' + labels.join('|') + ']';
-  } catch (e) { return 'fingerprint-error'; }
+    walk(bytes, '', 0);
+    return parts.join(' ');
+  } catch (e) { return 'tree-error'; }
+}
+function deepLabels(bytes) {
+  const labels = [], jtitles = [];
+  let jsonCount = 0, gzipCount = 0;
+  const collect = (buf, depth) => {
+    if (depth > 5) return;
+    const fs = parseMessage(buf);
+    if (!fs) return;
+    for (const f of fs) {
+      if (f.wire !== 2) continue;
+      const d = f.data;
+      if (d.length >= 2 && d[0] === 0x1f && d[1] === 0x8b) gzipCount++;
+      const t = bytesToUtf8(d);
+      if (typeof t === 'string') {
+        const s = t.replace(/^\s+/, '');
+        if (s.charAt(0) === '{' || s.charAt(0) === '[') {
+          jsonCount++;
+          try {
+            const doc = JSON.parse(t);
+            const walkJ = (v, dd) => {
+              if (jtitles.length >= 6 || !v || typeof v !== 'object' || dd > 3) return;
+              if (Array.isArray(v)) { v.forEach(x => walkJ(x, dd + 1)); return; }
+              for (const k of ['groupTitle', 'title', 'name', 'tabName']) {
+                if (typeof v[k] === 'string' && v[k].length >= 2 && v[k].length <= 14 && !jtitles.includes(v[k])) jtitles.push(v[k]);
+              }
+              for (const k of Object.keys(v)) walkJ(v[k], dd + 1);
+            };
+            walkJ(doc, 0);
+          } catch (e) {}
+        } else if (t.length >= 2 && t.length <= 14 && !/[\u0000-\u001f]/.test(t) && !labels.includes(t) && labels.length < 10) {
+          labels.push(t);
+        }
+      }
+      collect(d, depth + 1);
+    }
+  };
+  collect(bytes, 0);
+  return { labels, jtitles, jsonCount, gzipCount };
 }
 function jsonFingerprint(doc) {
   try {
@@ -244,6 +275,7 @@ try {
     if (!handled) {
       const rpid = getRpid(original);
       let result = {bytes: original, count: 0};
+      let baseCount = 0, extraCount = 0;
       if (EMPTY_RPIDS.has(rpid)) result = replaceTopField7(original, EMPTY_PAYLOAD);
       else {
         const cleaners = {
@@ -255,11 +287,13 @@ try {
           '1100001': cleanMinePayload,
           '1060060': cleanFlightPayload
         };
-        if (cleaners[rpid]) result = transformTopField7(original, cleaners[rpid]);
+        if (cleaners[rpid]) { result = transformTopField7(original, cleaners[rpid]); baseCount = result.count; }
         const extra = transformTopField7(result.bytes, bytes => cleanExtraPayload(bytes, rpid === MINE_RPID));
+        extraCount = extra.count;
         result = {bytes: extra.bytes, count: result.count + extra.count};
       }
-      console.log(`[UmetripAds] rpid=${rpid} len=${original.length} removed=${result.count} ${structFingerprint(original)}`);
+      const dl = deepLabels(original);
+      console.log(`[UmetripAds] rpid=${rpid} len=${original.length} base=${baseCount} extra=${extraCount} ${treeFingerprint(original)} labels=[${dl.labels.join('|')}] jtitles=[${dl.jtitles.join('|')}] json=${dl.jsonCount} gzip=${dl.gzipCount}`);
       if (result.count) {
         $done({body: result.bytes});
       } else $done({});
