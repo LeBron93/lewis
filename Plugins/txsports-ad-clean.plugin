@@ -1,11 +1,8 @@
-#!name = 腾讯体育净化（ZenmoFeiShi）
+#!name = 腾讯体育净化
 #!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词、去除新闻详情页底部推广。Loon 插件版 v14 精简：仅 QUIC 拦截＋9 条脚本规则＋MITM。
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
-# v16（2026-11-04）：图片加载慢修复——新增 [Host] 系统 DNS（腾讯系图片域名走系统 DNS）；其余未动（QUIC＋5 条规则＋MITM）。
-# v15（2026-11-04）：砍到 5 条规则——删 getsdkconfig、init/config、liveSum、multiUpdate 4 条未单独验证的规则，MITM 去掉仅供 getsdkconfig 的 k.ssp.qq.com；脚本未动（多余分支不再触发，留作恢复用，v14 插件已备份）。
-# 上游：ZenmoFeiShi/Qx txsports-ad-clean.snippet，blob SHA 8a4c996332363d05727cb4b44d47496c69ab7ce0；脚本为本地垫片副本，仅 3 处平台 I/O 改动，非逐字节相同。仅 GetTabRemoteConfig 开 binary-body-mode=true。
-# 勿与旧插件 TencentSports.plugin 同时启用（冲突）。
+
 
 [Host]
 # 腾讯系域名走系统 DNS（取自 Hey-sayiwanna 模块）：避免 Loon 侧 DNS 解析慢导致图片加载慢；不影响 MITM 与脚本规则
