@@ -2,6 +2,7 @@
 #!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 插件版 v10：QUIC 拦截 + GDT 广告平台拦截 + 8 条脚本规则（新闻详情页底部推广修复）。
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
+# v11（2026-11-04）：仅恢复 HTTPDNS 拦截层（v7 原样）；SSP 诊断已证广告非 SSP 渠道（gate 过、响应 empty-shape），余下怀疑广告 SDK 经 HTTPDNS 直连 IP 绕过域名规则。脚本未动（仍为诊断版 pin ae8e3d8e）。
 # 诊断版 v11d2（2026-11-04）：脚本仅在 SSP 分支与 homePageV2 分支加 TXDIAG 诊断日志（看广告位 gate 值与我的页 moduleList 形态），清理逻辑未动；拿到数据后出正式修复并去掉日志。脚本固定新 commit pin。
 # v10（2026-11-04）：v9 基础上仅恢复一层——GDT 广告平台拦截（v7 原样，未动脚本规则/MITM/QUIC）。新闻详情页底部推广疑为 GDT 广告，v9 删了该层；先单层验证，无效再按请求记录定位文章接口。v7/v8 均有本地备份可回滚。
 # 上游：ZenmoFeiShi/Qx txsports-ad-clean.snippet，blob SHA 8a4c996332363d05727cb4b44d47496c69ab7ce0；脚本为本地垫片副本，仅 3 处平台 I/O 改动，非逐字节相同。仅 GetTabRemoteConfig 开 binary-body-mode=true。
@@ -9,6 +10,24 @@
 
 [Rule]
 PROTOCOL,QUIC,REJECT
+# —— 第一层：HTTPDNS 拦截 ——
+DOMAIN-KEYWORD,httpdns,REJECT
+DOMAIN-KEYWORD,httpsdns,REJECT
+USER-AGENT,httpdns*,REJECT
+USER-AGENT,httpsdns*,REJECT
+USER-AGENT,Httpdns*,REJECT
+USER-AGENT,Httpsdns*,REJECT
+URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/v?[0-9]+)?\/(?:sign_)?(?:(?:d|ss)[46]?|resolve)\?,REJECT
+URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d+\/httpdns\/,REJECT
+IP-CIDR,119.29.29.98/32,REJECT,no-resolve
+IP-CIDR,119.29.29.99/32,REJECT,no-resolve
+IP-CIDR,203.205.129.102/32,REJECT,no-resolve
+IP-CIDR,203.205.234.132/32,REJECT,no-resolve
+DOMAIN,httpdns.kg.qq.com,REJECT
+DOMAIN,dns.weixin.qq.com,REJECT
+DOMAIN,aedns.weixin.qq.com,REJECT
+DOMAIN,twns.p2ptun.qq.com,REJECT
+DOMAIN,tp2p.kg.qq.com,REJECT
 # —— 腾讯广告平台（优量汇 GDT，v7 原样恢复）——
 DOMAIN-SUFFIX,gdt.qq.com,REJECT
 DOMAIN-SUFFIX,e.qq.com,REJECT
