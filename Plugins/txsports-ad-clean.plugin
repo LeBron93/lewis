@@ -1,42 +1,17 @@
 #!name = 腾讯体育净化（ZenmoFeiShi）
-#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 插件版 v7：v6 的 8 条脚本规则 + HTTPDNS/GDT [Rule] 层，新增 PROTOCOL,QUIC 拦截，强制 QUIC 回落 TCP。
+#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 插件版 v8：精简版，QUIC 拦截 + GDT 拦截 + 8 条脚本规则。
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
-# v7（2026-11-03，用户报 v6 实测“我的页面和信息流依然去不掉”，要求重写）：
-#  诊断：2026-11-02 脚本任务列表截图显示，打开“我的”页面时 homePageV2 等目标请求根本没进 Loon（只有 3 个广告 SDK 任务），脚本无物可改；
-#   2026-11-03 核实 jsDelivr 固定 commit 脚本地址可正常拉到脚本本体，排除脚本分发问题。剩下最可能的解释：App 的接口流量走 QUIC（UDP），MITM 无法解密，
-#   按路径匹配的脚本规则在 QUIC 请求上静默失效。本版只加一层：PROTOCOL,QUIC,REJECT（Loon 原生规则类型，强制 QUIC 回落 TCP 走 MITM），其余规则/MITM/脚本地址不动。
-#  上游重核（2026-11-03）：ZenmoFeiShi/Qx txsports-ad-clean.snippet，blob SHA 8a4c996332363d05727cb4b44d47496c69ab7ce0，#!update 2026-11-1；
-#   txsports-ad-clean.js SHA-256 4e226de5408e8a6fb25bc5ebfd1cb802bc89097d21dc3c1e85c12f3f3d56fab4（11,795 字节），与 2026-11-01 改写时逐字节一致，上游无新改动。
-#  改写方式：QX snippet 的 8 条 url script-response-body 规则逐条转 Loon http-response（url-and-header 一条转 requires-body=true，脚本内读 $request.headers 判 UA）；hostname 4 个域名原样进 [MITM]。
-#  脚本：Scripts/txsports-ad-clean-loon.js，本地 Loon 垫片副本，仅 3 处平台 I/O 改动（$response.statusCode->$response.status || $response.statusCode；$response.bodyBytes->$response.bodyBytes || $response.body；$done bodyBytes->$done body），其余逻辑原样，副本与源文件不是逐字节相同（diff 已核）；node --check 通过。
-#  平台 API 清单：$request.url / $request.headers / $request.body、$response.status / $response.body / $response.bodyBytes、$done；无 $prefs/$notify/$task 依赖。
-#  仅 GetTabRemoteConfig（protobuf 二进制）一条开 binary-body-mode=true；其余 7 条 binary-body-mode=false，取字符串 body。
-#  [Rule] 层：PROTOCOL,QUIC,REJECT（新增，见上）+ HTTPDNS 拦截 + GDT 广告平台拦截（沿用 v5/v6，原样抄自旧插件 v4 的 [Rule] 段）；QUIC 拦截是全局性的，插件启用期间所有 QUIC 流量回落 TCP，属正常回落机制。
-#  旧插件 TencentSports.plugin 未动；两个插件同时启用会冲突（旧插件的 reject-200 会拦掉 GetTabRemoteConfig），测试时必须先停用旧插件。未在真机验证。
+# v8（2026-11-03，精简）：删 HTTPDNS 拦截层（17 条，v6/v7 均含、从未单独验证是否必需；v7 已确认有效的关键层是 PROTOCOL,QUIC,REJECT）；其余不动。
+#  v7 已确认有效（2026-11-03 晚 Berlin 亲口确认）：我的页面与信息流均已去掉，根因是 QUIC 绕过 MITM。
+#  上游：ZenmoFeiShi/Qx txsports-ad-clean.snippet，blob SHA 8a4c996332363d05727cb4b44d47496c69ab7ce0（#!update 2026-11-1）；txsports-ad-clean.js SHA-256 4e226de5408e8a6fb25bc5ebfd1cb802bc89097d21dc3c1e85c12f3f3d56fab4，与 2026-11-01 逐字节一致。
+#  脚本：Scripts/txsports-ad-clean-loon.js，本地垫片副本，仅 3 处平台 I/O 改动（$response.statusCode->$response.status || $response.statusCode；$response.bodyBytes->$response.bodyBytes || $response.body；$done bodyBytes->$done body），其余逻辑原样，非逐字节相同（diff 已核）；node --check 通过。仅 GetTabRemoteConfig 开 binary-body-mode=true。
+#  旧插件 TencentSports.plugin 未动；两插件同时启用冲突（旧插件 reject-200 会拦 GetTabRemoteConfig），测试时先停用旧插件。v7 内容已备份，可随时回滚。
 
 [Rule]
-# —— 第零层：QUIC 拦截（新增，强制回落 TCP，否则 MITM 与脚本规则对 QUIC 请求静默失效）——
+# QUIC 拦截：强制回落 TCP，否则 MITM 与脚本规则对 QUIC 请求静默失效（v7 已确认有效的关键层）
 PROTOCOL,QUIC,REJECT
-# —— 第一层：HTTPDNS 拦截 ——
-DOMAIN-KEYWORD,httpdns,REJECT
-DOMAIN-KEYWORD,httpsdns,REJECT
-USER-AGENT,httpdns*,REJECT
-USER-AGENT,httpsdns*,REJECT
-USER-AGENT,Httpdns*,REJECT
-USER-AGENT,Httpsdns*,REJECT
-URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(?:\/v?[0-9]+)?\/(?:sign_)?(?:(?:d|ss)[46]?|resolve)\?,REJECT
-URL-REGEX,^http:\/\/((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?):\d+\/httpdns\/,REJECT
-IP-CIDR,119.29.29.98/32,REJECT,no-resolve
-IP-CIDR,119.29.29.99/32,REJECT,no-resolve
-IP-CIDR,203.205.129.102/32,REJECT,no-resolve
-IP-CIDR,203.205.234.132/32,REJECT,no-resolve
-DOMAIN,httpdns.kg.qq.com,REJECT
-DOMAIN,dns.weixin.qq.com,REJECT
-DOMAIN,aedns.weixin.qq.com,REJECT
-DOMAIN,twns.p2ptun.qq.com,REJECT
-DOMAIN,tp2p.kg.qq.com,REJECT
-# —— 第二层：腾讯广告平台（优量汇 GDT）——
+# 腾讯广告平台（优量汇 GDT）
 DOMAIN-SUFFIX,gdt.qq.com,REJECT
 DOMAIN-SUFFIX,e.qq.com,REJECT
 DOMAIN-SUFFIX,gdtimg.com,REJECT
