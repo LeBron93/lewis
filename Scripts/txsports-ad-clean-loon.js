@@ -220,6 +220,17 @@
     }
     if (/^https?:\/\/app\.sports\.qq\.com\/user\/homePageV2(?:\?|$)/.test(url)) {
       d = o && o.data;
+      // TEMP-DIAG v11d2: log-only, behavior unchanged; strip in final build.
+      try {
+        var dgMl = d && d.moduleList, dgTypes = [], dgSeen = {}, dgI, dgT, dgK;
+        if (Array.isArray(dgMl)) {
+          for (dgI = 0; dgI < dgMl.length; dgI++) {
+            dgT = dgMl[dgI] && dgMl[dgI].moduleType; dgK = String(dgT);
+            if (!dgSeen[dgK]) { dgSeen[dgK] = true; dgTypes.push(dgK); }
+          }
+        }
+        console.log("[TXDIAG] mine n=" + (Array.isArray(dgMl) ? dgMl.length : -1) + " types=" + dgTypes.slice(0, 40).join(",") + " keys=" + (d && typeof d === "object" ? Object.keys(d).slice(0, 20).join(",") : "-"));
+      } catch (e5) {}
       if (!d || typeof d !== "object" || !tsqxDropMyModules(d.moduleList)) return {};
       return { body: JSON.stringify(o) };
     }
