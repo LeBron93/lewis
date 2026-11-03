@@ -3,6 +3,11 @@
  * 原作者: TG@ZenMoFiShi, 源文件: ZenmoFeiShi/Qx txsports-ad-clean.js (snippet 注明更新于 2026-11-01)
  * 源文件 SHA-256: 4e226de5408e8a6fb25bc5ebfd1cb802bc89097d21dc3c1e85c12f3f3d56fab4
  * 仅改动平台 I/O 垫片, 其余逻辑原样未动; 本文件与源文件不是逐字节相同。
+ * 扩展 v12 (2026-11-04): feeds/list 分支在上游原逻辑之后, 追加整项删除广告条目
+ * (谓词移植自 Hey-sayiwanna TencentSportsAdBlock.js 的 isFeedAd: id=ad / type 613 /
+ * 强插 / is_force_insert / internalbanner 等标记); 上游原逻辑未动, 其余分支与上游一致。
+ * 动因: 诊断证实 SSP 渠道返回空单、HTTPDNS 层亦无效, 文章底部广告随列表数据下发,
+ * 上游只清广告字段不删整项, 故补此一层。
  * 垫片: (1) $response.statusCode -> $response.status || $response.statusCode;
  * (2) $response.bodyBytes -> $response.bodyBytes || $response.body (Loon 在 binary-body-mode=true 时 $response.body 为 Uint8Array);
  * (3) $done({bodyBytes: ArrayBuffer}) -> $done({body: Uint8Array})。
@@ -207,6 +212,30 @@
     }
     return hit;
   }
+  function tsqxIsFeedAd(item) {
+    var report, infoReport, jumpUrl, info, param;
+    if (!item || typeof item !== "object") return false;
+    report = typeof item.report === "string" ? item.report : JSON.stringify(item.report || {});
+    info = item.info && typeof item.info === "object" ? item.info : null;
+    infoReport = info && typeof info.report === "string" ? info.report : JSON.stringify((info && info.report) || {});
+    jumpUrl = "";
+    if (info && info.jumpData && info.jumpData.param && typeof info.jumpData.param === "object") {
+      param = info.jumpData.param;
+      jumpUrl = param.url || param.iosUrl || "";
+    }
+    return (
+      item.id === "ad" ||
+      item.type === 613 ||
+      item.reason === "\u5f3a\u63d2" ||
+      /"rec_type":"613"/.test(report) ||
+      /"is_force_insert":"1"/.test(report) ||
+      /"module":"internalbanner"/.test(report) ||
+      /"sub_ei":"banner"/.test(report) ||
+      /ad\.sports|gdt|advert|internalbanner/i.test(report) ||
+      /ad\.sports|gdt|advert|internalbanner/i.test(infoReport) ||
+      /waimai\.meituan\.com|gdt\.qq\.com/i.test(jumpUrl)
+    );
+  }
   function tsqxJsonRun(url) {
     var raw = $response.body, o, d, inner, changed = false, i;
     if (typeof raw !== "string" || !raw) return {};
@@ -220,17 +249,6 @@
     }
     if (/^https?:\/\/app\.sports\.qq\.com\/user\/homePageV2(?:\?|$)/.test(url)) {
       d = o && o.data;
-      // TEMP-DIAG v11d2: log-only, behavior unchanged; strip in final build.
-      try {
-        var dgMl = d && d.moduleList, dgTypes = [], dgSeen = {}, dgI, dgT, dgK;
-        if (Array.isArray(dgMl)) {
-          for (dgI = 0; dgI < dgMl.length; dgI++) {
-            dgT = dgMl[dgI] && dgMl[dgI].moduleType; dgK = String(dgT);
-            if (!dgSeen[dgK]) { dgSeen[dgK] = true; dgTypes.push(dgK); }
-          }
-        }
-        console.log("[TXDIAG] mine n=" + (Array.isArray(dgMl) ? dgMl.length : -1) + " types=" + dgTypes.slice(0, 40).join(",") + " keys=" + (d && typeof d === "object" ? Object.keys(d).slice(0, 20).join(",") : "-"));
-      } catch (e5) {}
       if (!d || typeof d !== "object" || !tsqxDropMyModules(d.moduleList)) return {};
       return { body: JSON.stringify(o) };
     }
@@ -271,22 +289,22 @@
       }
       if (tsqxClearAdInfos(d.list)) changed = true;
       if (tsqxClearAdInfos(d.topItem)) changed = true;
+      if (Array.isArray(d.list)) {
+        var kept = [], k;
+        for (k = 0; k < d.list.length; k++) {
+          if (!tsqxIsFeedAd(d.list[k])) kept.push(d.list[k]);
+        }
+        if (kept.length !== d.list.length) { d.list = kept; changed = true; }
+      }
       return changed ? { body: JSON.stringify(o) } : {};
     }
     if (/^https?:\/\/sports\.ssp\.qq\.com\/app(?:\?|$)/.test(url)) {
-      // TEMP-DIAG v11d: log-only, behavior unchanged; strip in final build.
-      try {
-        var dgReq = (function () { try { var r = JSON.parse($request.body || ""); return r && r.adReqData; } catch (e3) { return null; } })();
-        var dgSlots = dgReq && Array.isArray(dgReq.slot) ? dgReq.slot.map(function (s) { return s ? String(s.loid) : "?"; }).join(",") : "-";
-        console.log("[TXDIAG] ssp adtype=" + (dgReq && dgReq.adtype) + " chid=" + (dgReq && dgReq.chid) + " launch=" + (dgReq && dgReq.launch) + " slots=[" + dgSlots + "] adList=" + (typeof o.adList === "string" ? o.adList.length : typeof o.adList));
-      } catch (e4) {}
-      if (!tsqxSspTargetRequest() || !o || typeof o.adList !== "string" || !o.adList) { console.log("[TXDIAG] ssp gate=req-fail"); return {}; }
-      try { inner = JSON.parse(o.adList); } catch (e2) { console.log("[TXDIAG] ssp gate=adlist-parse-fail"); return {}; }
-      if (!inner || !Array.isArray(inner.index) || !inner.index.length || !Array.isArray(inner.order) || !inner.order.length) { console.log("[TXDIAG] ssp gate=empty-shape"); return {}; }
+      if (!tsqxSspTargetRequest() || !o || typeof o.adList !== "string" || !o.adList) return {};
+      try { inner = JSON.parse(o.adList); } catch (e2) { return {}; }
+      if (!inner || !Array.isArray(inner.index) || !inner.index.length || !Array.isArray(inner.order) || !inner.order.length) return {};
       for (i = 0; i < inner.index.length; i++) {
-        if (!inner.index[i] || Number(inner.index[i].channel_id) !== 7247) { console.log("[TXDIAG] ssp gate=channel-mismatch idx=" + i); return {}; }
+        if (!inner.index[i] || Number(inner.index[i].channel_id) !== 7247) return {};
       }
-      console.log("[TXDIAG] ssp gate=PASS order-cleared");
       inner.order = [];
       o.adList = JSON.stringify(inner);
       return { body: JSON.stringify(o) };
