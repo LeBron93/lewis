@@ -3,6 +3,9 @@
  * 原作者: TG@ZenMoFiShi, 源文件: ZenmoFeiShi/Qx txsports-ad-clean.js (snippet 注明更新于 2026-11-01)
  * 源文件 SHA-256: 4e226de5408e8a6fb25bc5ebfd1cb802bc89097d21dc3c1e85c12f3f3d56fab4
  * 仅改动平台 I/O 垫片, 其余逻辑原样未动; 本文件与源文件不是逐字节相同。
+ * 扩展 v13 (2026-11-04): 新增 shequ.sports.qq.com/topic/detail 分支, 清空详情页广告字段
+ * (adListPB/adList/adInfos, 移植自 Hey-sayiwanna TencentSportsAdBlock.js 的详情分支);
+ * 动因: QX 对照显示详情接口未被 Zenmo 原脚本覆盖, 文章底部广告随详情数据下发。
  * 扩展 v12 (2026-11-04): feeds/list 分支在上游原逻辑之后, 追加整项删除广告条目
  * (谓词移植自 Hey-sayiwanna TencentSportsAdBlock.js 的 isFeedAd: id=ad / type 613 /
  * 强插 / is_force_insert / internalbanner 等标记); 上游原逻辑未动, 其余分支与上游一致。
@@ -240,6 +243,14 @@
     var raw = $response.body, o, d, inner, changed = false, i;
     if (typeof raw !== "string" || !raw) return {};
     try { o = JSON.parse(raw); } catch (e) { return {}; }
+    if (/^https?:\/\/shequ\.sports\.qq\.com\/topic\/detail(?:\?|$)/.test(url)) {
+      d = o && o.data;
+      if (!d || typeof d !== "object") return {};
+      if (typeof d.adListPB === "string" && d.adListPB.length > 0) { d.adListPB = ""; changed = true; }
+      if (Array.isArray(d.adList) && d.adList.length > 0) { d.adList = []; changed = true; }
+      if (Array.isArray(d.adInfos) && d.adInfos.length > 0) { d.adInfos = []; changed = true; }
+      return changed ? { body: JSON.stringify(o) } : {};
+    }
     if (/^https?:\/\/app\.sports\.qq\.com\/init\/config(?:\?|$)/.test(url)) {
       d = o && o.data;
       if (!d || typeof d !== "object" || !d.middleIcon || typeof d.middleIcon !== "object") return {};
@@ -315,7 +326,7 @@
     if (typeof $request === "undefined" || typeof $response === "undefined") return {};
     var tsqxUrl = $request.url || "";
     if (/^https?:\/\/k\.ssp\.qq\.com\/getsdkconfig(?:\?|$)/.test(tsqxUrl)) return tsqxXmlRun(tsqxUrl);
-    if (/^https?:\/\/app\.sports\.qq\.com\/(?:init\/config|user\/homePageV2|m\/match\/liveSum|match\/multiUpdate|feeds\/(?:home|list))(?:\?|$)|^https?:\/\/sports\.ssp\.qq\.com\/app(?:\?|$)/.test(tsqxUrl)) return tsqxJsonRun(tsqxUrl);
+    if (/^https?:\/\/app\.sports\.qq\.com\/(?:init\/config|user\/homePageV2|m\/match\/liveSum|match\/multiUpdate|feeds\/(?:home|list))(?:\?|$)|^https?:\/\/sports\.ssp\.qq\.com\/app(?:\?|$)|^https?:\/\/shequ\.sports\.qq\.com\/topic\/detail(?:\?|$)/.test(tsqxUrl)) return tsqxJsonRun(tsqxUrl);
     if (!/^https?:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig(?:\?|$)/.test(tsqxUrl)) return {};
     var hs = $request.headers || {}, ua = "", h, raw, b;
     for (h in hs) if (h.toLowerCase() === "user-agent") ua = String(hs[h]);
