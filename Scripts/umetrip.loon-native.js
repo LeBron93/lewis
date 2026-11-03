@@ -206,47 +206,6 @@ function cleanExtraPayload(bytes, mine) {
   return {bytes: proto.bytes, count: json.count + proto.count};
 }
 
-// TEMPORARY DIAGNOSTIC v3 (2026-11-04): log the exact key-paths of promo titles
-// inside embedded JSON docs + strict-vs-trimmed JSON counts. REMOVE before final.
-function jsonPathsFingerprint(bytes) {
-  try {
-    const paths = [];
-    let strict = 0, trimmed = 0;
-    const TITLE_RE = /礼金中心|票券权益|特价专区|会员月卡|民航官方直销|发现目的地|风景榜|延误榜|准点榜|到达榜|盘旋榜/;
-    const scan = (buf, depth) => {
-      if (depth > 5 || paths.length >= 8) return;
-      const fs = parseMessage(buf);
-      if (!fs) return;
-      for (const f of fs) {
-        if (f.wire !== 2) continue;
-        const t = bytesToUtf8(f.data);
-        if (typeof t !== 'string') continue;
-        const s = t.replace(/^\uFEFF/, '').replace(/^\s+/, '');
-        if (s.charAt(0) === '{' || s.charAt(0) === '[') {
-          trimmed++;
-          if (t.charAt(0) === '{' || t.charAt(0) === '[') strict++;
-          try {
-            const doc = JSON.parse(s);
-            const walkJ = (v, path, d) => {
-              if (paths.length >= 8 || !v || typeof v !== 'object' || d > 6) return;
-              if (Array.isArray(v)) { v.forEach((x, i) => walkJ(x, path + '[' + i + ']', d + 1)); return; }
-              for (const k of Object.keys(v)) {
-                const val = v[k];
-                if (typeof val === 'string' && TITLE_RE.test(val)) paths.push(path + '.' + k + '=' + val.slice(0, 12));
-                else walkJ(val, path + '.' + k, d + 1);
-              }
-            };
-            walkJ(doc, 'doc', 0);
-          } catch (e) {}
-        }
-        scan(f.data, depth + 1);
-      }
-    };
-    scan(bytes, 0);
-    return 'jsonStrict=' + strict + ' jsonTrimmed=' + trimmed + ' paths=[' + paths.join(' | ') + ']';
-  } catch (e) { return 'paths-error'; }
-}
-
 try {
   if (!$response || !($response.body instanceof Uint8Array)) {
     $done({});
@@ -289,8 +248,8 @@ try {
         const extra = transformTopField7(result.bytes, bytes => cleanExtraPayload(bytes, rpid === MINE_RPID));
         result = {bytes: extra.bytes, count: result.count + extra.count};
       }
-      console.log(`[UmetripAds] rpid=${rpid} len=${original.length} removed=${result.count} ${jsonPathsFingerprint(original)}`);
       if (result.count) {
+        console.log(`[UmetripAds] rpid=${rpid}, removed/rewritten=${result.count}`);
         $done({body: result.bytes});
       } else $done({});
     }
