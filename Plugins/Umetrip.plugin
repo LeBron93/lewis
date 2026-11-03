@@ -3,12 +3,13 @@
 #!author = @ddgksf2013（墨鱼手記）
 #!homepage = https://ddgksf2013.top/rewrite/UmetripAds.conf
 # Loon 转换版：规则来自 UmetripAds.conf V1.0.3（2026-10-05）；脚本仅用 $request/$response/$done，Loon 无需改写；原脚本地址直访会跳转回站点首页，故脚本随插件一并存放于本仓库 Scripts/umetrip.ads.js（镜像副本，见脚本头注释）
+# 2026-11-03 补丁：脚本追加保守扩展层 cleanExtraPayload（改编自 shengrui123 移植版 2026-09-11），针对探索横幅/榜单与“我的”页空容器残留；脚本地址加 ?v=20261103 强制 Loon 重新拉取。
 
 [Rewrite]
 ^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject-img
 
 [Script]
-http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.ads.js, requires-body=true, tag=航旅纵横净化
+http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.ads.js?v=20261103, requires-body=true, tag=航旅纵横净化
 
 [MITM]
 hostname = sns.umetrip.com, appmsg.umetrip.com, home.umetrip.com, umehome.umetrip.com, opactivity.umetrip.com, activity.umetrip.com, umerp.umetrip.com, flightstatus.umetrip.com, umeflightstatus.umetrip.com, startup.umetrip.com, umestartup.umetrip.com, user.umetrip.com, umeuser.umetrip.com, event.umetrip.com, oss.umetrip.com
