@@ -2,6 +2,7 @@
 #!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 插件版 v10：QUIC 拦截 + GDT 广告平台拦截 + 8 条脚本规则（新闻详情页底部推广修复）。
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
+# v13（2026-11-04）：按 QX 对照补详情接口——新增 shequ.sports.qq.com/topic/detail 规则＋MITM，脚本新增详情分支清广告字段并删内嵌广告条目（移植自 Hey-sayiwanna）；Zenmo 原脚本与 QX snippet 逐项比对过，规则与逻辑均无遗漏，差在详情接口未覆盖。
 # v12（2026-11-04）：脚本去掉全部 TXDIAG 诊断日志，feeds/list 追加整项删除广告条目（谓词移植自 Hey-sayiwanna isFeedAd，上游原逻辑未动）；其余层（QUIC/HTTPDNS/GDT/MITM）未动。
 # v11（2026-11-04）：仅恢复 HTTPDNS 拦截层（v7 原样）；SSP 诊断已证广告非 SSP 渠道（gate 过、响应 empty-shape），余下怀疑广告 SDK 经 HTTPDNS 直连 IP 绕过域名规则。脚本未动（仍为诊断版 pin ae8e3d8e）。
 # 诊断版 v11d2（2026-11-04）：脚本仅在 SSP 分支与 homePageV2 分支加 TXDIAG 诊断日志（看广告位 gate 值与我的页 moduleList 形态），清理逻辑未动；拿到数据后出正式修复并去掉日志。脚本固定新 commit pin。
@@ -38,14 +39,15 @@ DOMAIN,qzs.qq.com,REJECT
 DOMAIN,ads.privacy.qq.com,REJECT
 
 [Script]
-http-response ^https:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=true, tag=腾讯体育净化
-http-response ^https:\/\/k\.ssp\.qq\.com\/getsdkconfig(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/init\/config(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/user\/homePageV2(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/m\/match\/liveSum(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/match\/multiUpdate(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/app\.sports\.qq\.com\/feeds\/(?:home|list)(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
-http-response ^https:\/\/sports\.ssp\.qq\.com\/app(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@6ef3c492a3967e15a1e9256dbb61b69176300e46/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/config\.ab\.qq\.com\/tab\/GetTabRemoteConfig(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=true, tag=腾讯体育净化
+http-response ^https:\/\/k\.ssp\.qq\.com\/getsdkconfig(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/app\.sports\.qq\.com\/init\/config(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/app\.sports\.qq\.com\/user\/homePageV2(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/app\.sports\.qq\.com\/m\/match\/liveSum(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/app\.sports\.qq\.com\/match\/multiUpdate(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/app\.sports\.qq\.com\/feeds\/(?:home|list)(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/sports\.ssp\.qq\.com\/app(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
+http-response ^https:\/\/shequ\.sports\.qq\.com\/topic\/detail(?:\?.*)?$ script-path=https://cdn.jsdelivr.net/gh/LeBron93/lewis@82288b8c4ace424dc5c623e087b90214a3cf247c/Scripts/txsports-ad-clean-loon.js, requires-body=true, binary-body-mode=false, tag=腾讯体育净化
 
 [MITM]
-hostname = config.ab.qq.com, k.ssp.qq.com, app.sports.qq.com, sports.ssp.qq.com
+hostname = config.ab.qq.com, k.ssp.qq.com, app.sports.qq.com, sports.ssp.qq.com, shequ.sports.qq.com
