@@ -247,8 +247,16 @@
       d = o && o.data;
       if (!d || typeof d !== "object") return {};
       if (typeof d.adListPB === "string" && d.adListPB.length > 0) { d.adListPB = ""; changed = true; }
+      if (typeof d.adList === "string" && d.adList.length > 0) { d.adList = ""; changed = true; }
       if (Array.isArray(d.adList) && d.adList.length > 0) { d.adList = []; changed = true; }
       if (Array.isArray(d.adInfos) && d.adInfos.length > 0) { d.adInfos = []; changed = true; }
+      if (Array.isArray(d.list)) {
+        var keptD = [], kd;
+        for (kd = 0; kd < d.list.length; kd++) {
+          if (!tsqxIsFeedAd(d.list[kd])) keptD.push(d.list[kd]);
+        }
+        if (keptD.length !== d.list.length) { d.list = keptD; changed = true; }
+      }
       return changed ? { body: JSON.stringify(o) } : {};
     }
     if (/^https?:\/\/app\.sports\.qq\.com\/init\/config(?:\?|$)/.test(url)) {
