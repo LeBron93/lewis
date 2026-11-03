@@ -168,6 +168,54 @@ function cleanExtraPayload(bytes, mine) {
   return {bytes: proto.bytes, count: json.count + proto.count};
 }
 
+// TEMPORARY DIAGNOSTIC (2026-11-04): log a compact structure fingerprint per
+// response so the real payload schema can be read from a screenshot of the
+// script log. REMOVE before the final build: it logs field numbers + short
+// title strings only, never full payloads.
+function structFingerprint(bytes) {
+  try {
+    const fields = parseMessage(bytes);
+    if (!fields) return 'unparsed';
+    const top = fields.map(f => f.field).join(',');
+    let f7info = '';
+    const f7 = fields.find(f => f.field === 7 && f.wire === 2);
+    if (f7) {
+      const inner = parseMessage(f7.data);
+      if (inner) f7info = ' f7=[' + inner.map(f => f.field).join(',') + ']';
+    }
+    const labels = [];
+    const collect = (buf, depth) => {
+      if (depth > 2 || labels.length >= 8) return;
+      const fs = parseMessage(buf);
+      if (!fs) return;
+      for (const f of fs) {
+        if (f.wire !== 2) continue;
+        const t = bytesToUtf8(f.data);
+        if (typeof t === 'string' && t.length >= 2 && t.length <= 14 && !/[\u0000-\u001f]/.test(t) && !labels.includes(t)) labels.push(t);
+        if (labels.length < 8) collect(f.data, depth + 1);
+      }
+    };
+    collect(bytes, 0);
+    return 'top=[' + top + ']' + f7info + ' labels=[' + labels.join('|') + ']';
+  } catch (e) { return 'fingerprint-error'; }
+}
+function jsonFingerprint(doc) {
+  try {
+    const keys = Object.keys(doc).join(',');
+    const titles = [];
+    const walk = (v, d) => {
+      if (titles.length >= 6 || !v || typeof v !== 'object' || d > 3) return;
+      if (Array.isArray(v)) { v.forEach(x => walk(x, d + 1)); return; }
+      for (const k of ['groupTitle', 'title', 'name', 'tabName']) {
+        if (typeof v[k] === 'string' && v[k].length >= 2 && v[k].length <= 14 && !titles.includes(v[k])) titles.push(v[k]);
+      }
+      for (const k of Object.keys(v)) walk(v[k], d + 1);
+    };
+    walk(doc, 0);
+    return 'keys=[' + keys + '] titles=[' + titles.join('|') + ']';
+  } catch (e) { return 'json-fingerprint-error'; }
+}
+
 try {
   if (!$response || !($response.body instanceof Uint8Array)) {
     $done({});
@@ -185,9 +233,10 @@ try {
         handled = true;
         const removed = Object.keys(cleaned.stats).reduce((sum, key) => sum + cleaned.stats[key], 0);
         if (removed > 0) {
-          console.log(`[UmetripAds] json cleaned: ${JSON.stringify(cleaned.stats)}`);
+          console.log(`[UmetripAds] json len=${original.length} removed=${removed} ${jsonFingerprint(JSON.parse(cleaned.body))}`);
           $done({body: utf8Bytes(cleaned.body)});
         } else {
+          try { console.log(`[UmetripAds] json len=${original.length} removed=0 ${jsonFingerprint(JSON.parse(bodyText))}`); } catch (e) {}
           $done({});
         }
       }
@@ -210,8 +259,8 @@ try {
         const extra = transformTopField7(result.bytes, bytes => cleanExtraPayload(bytes, rpid === MINE_RPID));
         result = {bytes: extra.bytes, count: result.count + extra.count};
       }
+      console.log(`[UmetripAds] rpid=${rpid} len=${original.length} removed=${result.count} ${structFingerprint(original)}`);
       if (result.count) {
-        console.log(`[UmetripAds] rpid=${rpid}, removed/rewritten=${result.count}`);
         $done({body: result.bytes});
       } else $done({});
     }
