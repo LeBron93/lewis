@@ -11,7 +11,7 @@
 ^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject
 
 [Script]
-http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.loon-native.js?v=20261104-4, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
+http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.loon-native.js?v=20261104-5, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
 
 [Rule]
 PROTOCOL,QUIC,REJECT

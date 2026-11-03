@@ -40,10 +40,19 @@ function isAirportDeparturesGroup(group) {
   if (!hasAirportTitle(titles)) return false;
   try { return hasFlightMarker(JSON.stringify(group)); } catch (e) { return false; }
 }
-const LABEL_KEYS = ['title', 'name', 'caption', 'tabName', 'tabTitle', 'displayName', 'text', 'groupTitle', 'headerTitle', 'moduleName'];
+const LABEL_KEYS = ['title', 'name', 'caption', 'tabName', 'tabTitle', 'displayName', 'text', 'groupTitle', 'headerTitle', 'moduleName', 'moduleTitle', 'subTitle', 'headTitle', 'cardTitle', 'sectionTitle', 'bannerTitle'];
 function itemLabels(item) {
   if (!item || typeof item !== 'object' || Array.isArray(item)) return [];
-  const labels = LABEL_KEYS.map(key => item[key]).filter(value => typeof value === 'string');
+  const labels = [];
+  const collect = (obj, depth) => {
+    if (!obj || typeof obj !== 'object' || Array.isArray(obj) || depth > 2) return;
+    for (const key of LABEL_KEYS) if (typeof obj[key] === 'string') labels.push(obj[key]);
+    if (depth < 2) for (const key of Object.keys(obj)) {
+      const v = obj[key];
+      if (v && typeof v === 'object' && !Array.isArray(v)) collect(v, depth + 1);
+    }
+  };
+  collect(item, 0);
   for (const key of ['tabs', 'tabList']) {
     if (Array.isArray(item[key])) {
       for (const tab of item[key]) {
@@ -76,6 +85,20 @@ function cleanExtraJson(root, mine) {
       const nav = navigationList(value.map(itemLabels));
       for (let i = value.length - 1; i >= 0; i--) {
         const item = value[i];
+        if (typeof item === 'string') {
+          const trimmed = item.replace(/^\s+/, '');
+          if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') {
+            try {
+              const parsed = JSON.parse(item);
+              if (parsed && typeof parsed === 'object') {
+                const before = JSON.stringify(parsed);
+                walk(parsed, depth + 1);
+                if (JSON.stringify(parsed) !== before) { value[i] = JSON.stringify(parsed); changed = true; }
+              }
+            } catch (e) {}
+          }
+          continue;
+        }
         const advert = item && ['ADVERT', 'ADVERTISEMENT'].includes(item.cardType);
         const labels = itemLabels(item);
         const matched = removeUIItem(labels, mine, nav, advert) ||
@@ -90,7 +113,22 @@ function cleanExtraJson(root, mine) {
     }
     let emptiedLayout = false;
     for (const key of Object.keys(value)) {
-      const emptied = walk(value[key], depth + 1);
+      const child = value[key];
+      if (typeof child === 'string') {
+        const trimmed = child.replace(/^\s+/, '');
+        if (trimmed.charAt(0) === '{' || trimmed.charAt(0) === '[') {
+          try {
+            const parsed = JSON.parse(child);
+            if (parsed && typeof parsed === 'object') {
+              const before = JSON.stringify(parsed);
+              walk(parsed, depth + 1);
+              if (JSON.stringify(parsed) !== before) { value[key] = JSON.stringify(parsed); changed = true; }
+            }
+          } catch (e) {}
+          continue;
+        }
+      }
+      const emptied = walk(child, depth + 1);
       if (['children', 'medias'].includes(key) && emptied) emptiedLayout = true;
     }
     if (changed) refreshChildrenIndex(value);
@@ -168,85 +206,6 @@ function cleanExtraPayload(bytes, mine) {
   return {bytes: proto.bytes, count: json.count + proto.count};
 }
 
-// TEMPORARY DIAGNOSTIC v2 (2026-11-04): deeper structure fingerprint per
-// response. REMOVE before the final build.
-function treeFingerprint(bytes) {
-  try {
-    const parts = [];
-    const walk = (buf, path, depth) => {
-      if (depth > 4 || parts.length >= 10) return;
-      const fs = parseMessage(buf);
-      if (!fs) return;
-      const counts = {};
-      for (const f of fs) counts[f.field] = (counts[f.field] || 0) + 1;
-      parts.push((path || 'top') + ':[' + Object.keys(counts).map(k => counts[k] > 1 ? k + '*' + counts[k] : k).join(',') + ']');
-      if (depth >= 4) return;
-      const seen = new Set();
-      for (const f of fs) {
-        if (f.wire !== 2 || seen.has(f.field)) continue;
-        seen.add(f.field);
-        walk(f.data, (path ? path + '.' : '') + f.field, depth + 1);
-      }
-    };
-    walk(bytes, '', 0);
-    return parts.join(' ');
-  } catch (e) { return 'tree-error'; }
-}
-function deepLabels(bytes) {
-  const labels = [], jtitles = [];
-  let jsonCount = 0, gzipCount = 0;
-  const collect = (buf, depth) => {
-    if (depth > 5) return;
-    const fs = parseMessage(buf);
-    if (!fs) return;
-    for (const f of fs) {
-      if (f.wire !== 2) continue;
-      const d = f.data;
-      if (d.length >= 2 && d[0] === 0x1f && d[1] === 0x8b) gzipCount++;
-      const t = bytesToUtf8(d);
-      if (typeof t === 'string') {
-        const s = t.replace(/^\s+/, '');
-        if (s.charAt(0) === '{' || s.charAt(0) === '[') {
-          jsonCount++;
-          try {
-            const doc = JSON.parse(t);
-            const walkJ = (v, dd) => {
-              if (jtitles.length >= 6 || !v || typeof v !== 'object' || dd > 3) return;
-              if (Array.isArray(v)) { v.forEach(x => walkJ(x, dd + 1)); return; }
-              for (const k of ['groupTitle', 'title', 'name', 'tabName']) {
-                if (typeof v[k] === 'string' && v[k].length >= 2 && v[k].length <= 14 && !jtitles.includes(v[k])) jtitles.push(v[k]);
-              }
-              for (const k of Object.keys(v)) walkJ(v[k], dd + 1);
-            };
-            walkJ(doc, 0);
-          } catch (e) {}
-        } else if (t.length >= 2 && t.length <= 14 && !/[\u0000-\u001f]/.test(t) && !labels.includes(t) && labels.length < 10) {
-          labels.push(t);
-        }
-      }
-      collect(d, depth + 1);
-    }
-  };
-  collect(bytes, 0);
-  return { labels, jtitles, jsonCount, gzipCount };
-}
-function jsonFingerprint(doc) {
-  try {
-    const keys = Object.keys(doc).join(',');
-    const titles = [];
-    const walk = (v, d) => {
-      if (titles.length >= 6 || !v || typeof v !== 'object' || d > 3) return;
-      if (Array.isArray(v)) { v.forEach(x => walk(x, d + 1)); return; }
-      for (const k of ['groupTitle', 'title', 'name', 'tabName']) {
-        if (typeof v[k] === 'string' && v[k].length >= 2 && v[k].length <= 14 && !titles.includes(v[k])) titles.push(v[k]);
-      }
-      for (const k of Object.keys(v)) walk(v[k], d + 1);
-    };
-    walk(doc, 0);
-    return 'keys=[' + keys + '] titles=[' + titles.join('|') + ']';
-  } catch (e) { return 'json-fingerprint-error'; }
-}
-
 try {
   if (!$response || !($response.body instanceof Uint8Array)) {
     $done({});
@@ -264,10 +223,9 @@ try {
         handled = true;
         const removed = Object.keys(cleaned.stats).reduce((sum, key) => sum + cleaned.stats[key], 0);
         if (removed > 0) {
-          console.log(`[UmetripAds] json len=${original.length} removed=${removed} ${jsonFingerprint(JSON.parse(cleaned.body))}`);
+          console.log(`[UmetripAds] json cleaned: ${JSON.stringify(cleaned.stats)}`);
           $done({body: utf8Bytes(cleaned.body)});
         } else {
-          try { console.log(`[UmetripAds] json len=${original.length} removed=0 ${jsonFingerprint(JSON.parse(bodyText))}`); } catch (e) {}
           $done({});
         }
       }
@@ -275,7 +233,6 @@ try {
     if (!handled) {
       const rpid = getRpid(original);
       let result = {bytes: original, count: 0};
-      let baseCount = 0, extraCount = 0;
       if (EMPTY_RPIDS.has(rpid)) result = replaceTopField7(original, EMPTY_PAYLOAD);
       else {
         const cleaners = {
@@ -287,14 +244,12 @@ try {
           '1100001': cleanMinePayload,
           '1060060': cleanFlightPayload
         };
-        if (cleaners[rpid]) { result = transformTopField7(original, cleaners[rpid]); baseCount = result.count; }
+        if (cleaners[rpid]) result = transformTopField7(original, cleaners[rpid]);
         const extra = transformTopField7(result.bytes, bytes => cleanExtraPayload(bytes, rpid === MINE_RPID));
-        extraCount = extra.count;
         result = {bytes: extra.bytes, count: result.count + extra.count};
       }
-      const dl = deepLabels(original);
-      console.log(`[UmetripAds] rpid=${rpid} len=${original.length} base=${baseCount} extra=${extraCount} ${treeFingerprint(original)} labels=[${dl.labels.join('|')}] jtitles=[${dl.jtitles.join('|')}] json=${dl.jsonCount} gzip=${dl.gzipCount}`);
       if (result.count) {
+        console.log(`[UmetripAds] rpid=${rpid}, removed/rewritten=${result.count}`);
         $done({body: result.bytes});
       } else $done({});
     }
