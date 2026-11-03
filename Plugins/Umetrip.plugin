@@ -5,12 +5,13 @@
 # Loon 转换版：规则来自 UmetripAds.conf V1.0.3（2026-10-05）；脚本仅用 $request/$response/$done，Loon 无需改写；原脚本地址直访会跳转回站点首页，故脚本随插件一并存放于本仓库 Scripts/umetrip.ads.js（镜像副本，见脚本头注释）
 # 2026-11-03 补丁：脚本追加保守扩展层 cleanExtraPayload（改编自 shengrui123 移植版 2026-09-11），针对探索横幅/榜单与“我的”页空容器残留；脚本地址加 ?v=20261103 强制 Loon 重新拉取。
 # 2026-11-03 空白修正：广告图片拦截由 reject-img 改为 reject——QX/Surge 原规则为 reject，reject-img 只返回透明图、横幅位留空白；reject 使请求失败、App 不显示该横幅位。
+# 2026-11-03 二进制修正：脚本规则加 binary-body-mode=true——Loon 默认只给字符串 body，Protobuf 响应无法解析、脚本直接透传（QX 传 bodyBytes 故正常）；分发器同步改为按收到形态原样返回（bodyBytes/body）。
 
 [Rewrite]
 ^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject
 
 [Script]
-http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.ads.js?v=20261103, requires-body=true, tag=航旅纵横净化
+http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.ads.js?v=20261103-2, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
 
 [MITM]
 hostname = sns.umetrip.com, appmsg.umetrip.com, home.umetrip.com, umehome.umetrip.com, opactivity.umetrip.com, activity.umetrip.com, umerp.umetrip.com, flightstatus.umetrip.com, umeflightstatus.umetrip.com, startup.umetrip.com, umestartup.umetrip.com, user.umetrip.com, umeuser.umetrip.com, event.umetrip.com, oss.umetrip.com
