@@ -4,9 +4,10 @@
 #!homepage = https://ddgksf2013.top/rewrite/UmetripAds.conf
 # Loon 转换版：规则来自 UmetripAds.conf V1.0.3（2026-10-05）；脚本仅用 $request/$response/$done，Loon 无需改写；原脚本地址直访会跳转回站点首页，故脚本随插件一并存放于本仓库 Scripts/umetrip.ads.js（镜像副本，见脚本头注释）
 # 2026-11-03 补丁：脚本追加保守扩展层 cleanExtraPayload（改编自 shengrui123 移植版 2026-09-11），针对探索横幅/榜单与“我的”页空容器残留；脚本地址加 ?v=20261103 强制 Loon 重新拉取。
+# 2026-11-03 空白修正：广告图片拦截由 reject-img 改为 reject——QX/Surge 原规则为 reject，reject-img 只返回透明图、横幅位留空白；reject 使请求失败、App 不显示该横幅位。
 
 [Rewrite]
-^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject-img
+^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject
 
 [Script]
 http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.ads.js?v=20261103, requires-body=true, tag=航旅纵横净化
