@@ -1,10 +1,8 @@
-#!name = 腾讯体育净化（ZenmoFeiShi）
-#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。Loon 插件版 v9 纯净版：仅 QUIC 拦截 + 8 条脚本规则。
+#!name = 腾讯体育净化
+#!desc = 去除开屏广告、优化我的页面、去除底部会员tab、优化首页展示、去除搜索热词。
 #!author = TG@ZenMoFiShi
 #!homepage = https://github.com/ZenmoFeiShi/Qx
-# v9 纯净版（2026-11-03）：v8 基础上再删 GDT 拦截层；只留 PROTOCOL,QUIC,REJECT + 8 条脚本规则 + MITM。v8/v9 均未经实测，广告回来即回滚 v7（已备份）。
-# 上游：ZenmoFeiShi/Qx txsports-ad-clean.snippet，blob SHA 8a4c996332363d05727cb4b44d47496c69ab7ce0；脚本为本地垫片副本，仅 3 处平台 I/O 改动，非逐字节相同。仅 GetTabRemoteConfig 开 binary-body-mode=true。
-# 勿与旧插件 TencentSports.plugin 同时启用（冲突）。
+
 
 [Rule]
 PROTOCOL,QUIC,REJECT
