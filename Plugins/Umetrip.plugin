@@ -5,22 +5,16 @@
 # 2026-11-04 参考 xingjiu29/Umetrip（杏九）重做版：脚本 Scripts/umetrip.xingjiu29.js 为上游
 #   umetrip.js?v=3 的逐字镜像（git blob SHA 2920bc583b73c5ee0911d19d7f4deb7df64c4b53，仅仓库内
 #   镜像、未改逻辑；DEBUG 日志保留），首页白名单机制 + 我的页“会员卡片”文本匹配，目标：民航官方
-#   直销（首页白名单外）与我的页面会员横幅广告，2026-11-04 22:25 Berlin 亲口确认两处均已去掉。
-# 2026-11-04 ?v=20261104-10 扩展版：脚本 Scripts/umetrip.xingjiu29-plus.js（基底同上，仅加动态
-#   精简：风景榜 5 栏按名丢弃、机场行仅当含航班号/起飞标记时丢弃且纯查询框保留、内嵌 JSON 文档
-#   同样处理；离线 18 项验证通过），2026-11-04 22:36 Berlin 报动态目标“不起作用”。
-# 2026-11-04 ?v=20261104-11 404 试探版：脚本 Scripts/umetrip.xingjiu29-plus404.js（基底同上，仅加
-#   rpid 1000019/1430064 直接回空包，首页 1000002 与我的页 1100001 不动；离线 24 项验证通过）。
-#   上一版 ?v=20261104-10 已备份
-#   （Plugin-backups/umetrip-v20261104-9-backup-20261104-2229.plugin 与 umetrip-v20261104-10-backup-20261104-2238.plugin，md5 已核对一致）。
+#   直销（首页白名单外）与我的页面会员横幅广告。上一版 ?v=20261104-7 精简版已备份
+#   （Plugin-backups/umetrip-v20261104-7-backup-20261104-2205.plugin/.js，md5 已核对一致）。
 #   discardrp/startup reject 规则此前两度实测无效，本版暂不加；sensors/analytics 拦截未加。
-#   旧版脚本 Scripts/umetrip.loon-native.js、Scripts/umetrip.xingjiu29.js 保留未动，可回滚。
+#   旧版脚本 Scripts/umetrip.loon-native.js 保留未动，可回滚。
 
 [Rewrite]
 ^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject
 
 [Script]
-http-response ^https:\/\/(?:bkclient|sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.xingjiu29-plus404.js?v=20261104-11, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
+http-response ^https:\/\/(?:bkclient|sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.xingjiu29.js?v=20261104-9, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
 
 [MITM]
 hostname = bkclient.umetrip.com, bkclient.umetrip.com.cn, sns.umetrip.com, appmsg.umetrip.com, home.umetrip.com, umehome.umetrip.com, opactivity.umetrip.com, activity.umetrip.com, umerp.umetrip.com, flightstatus.umetrip.com, umeflightstatus.umetrip.com, startup.umetrip.com, umestartup.umetrip.com, user.umetrip.com, umeuser.umetrip.com, event.umetrip.com, oss.umetrip.com
