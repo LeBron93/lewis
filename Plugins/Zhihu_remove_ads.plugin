@@ -1,12 +1,12 @@
 #!name = 知乎去广告
-#!desc = 基于可莉 Zhihu_remove_ads（2026-10-02）：去开屏 / 信息流 / 回答页广告、精简标签与我的页面；另去热榜标签与热榜内容、搜索页“猜你想搜”与“大家都在搜”。
+#!desc = 基于可莉 Zhihu_remove_ads（2026-10-02）：去开屏 / 信息流 / 回答页广告、精简标签与我的页面；另去热榜标签与热榜内容、搜索页“猜你想搜”与“大家都在搜”（整块不渲染，只留搜索框）。
 #!author = 可莉🅥（原插件）
-#!date = 2026-11-04 10:05:00
+#!date = 2026-11-04 10:12:00
 # 来源说明：kelee.one 当日被 Cloudflare 拦截无法直读，内容以同源 Surge 模块镜像（Repcz/Tool，2026-10-02）逐条核对后转为 Loon 写法；jq 表达式原文照搬。
-# 本版相对原插件的改动（3 处，均标“改/新增”）：
+# 本版相对原插件的改动（均标“改/新增”）：
 #  1. 顶部标签去掉 hot（热榜 tab 不再出现）；
-#  2. search/recommend_query 全部清空（“猜你想搜”不再出现，原版只留 type=normal 的）；
-#  3. 新增 search/hot_search 空返回（“大家都在搜”不再出现）与 topstory/hot-lists 空返回（热榜内容兜底）。
+#  2. search/recommend_query 直接拒绝请求（“猜你想搜”整块不渲染；v1 曾只清空数据，结果只剩标题和占位条）；
+#  3. 新增 search/hot_search 直接拒绝请求（“大家都在搜”整块不渲染；v1 曾空返回 {}，结果只剩标题和占位条）与 topstory/hot-lists 空返回（热榜内容兜底）。
 
 [Rewrite]
 # m-cloud 配置：去掉 HTTPDNS / QUIC 相关配置（原版）
@@ -35,8 +35,8 @@
 ^https://api\.zhihu\.com/comment_v\d/answers/\d+/list-headers$ response-body-json-jq 'delpaths([[\"continuous_consumption_module\"]])'
 # 播客横幅（原版）
 ^https://api\.zhihu\.com/podcasts/hub/v\d$ response-body-json-jq 'delpaths([[\"banners\"]])'
-# 猜你想搜：改——recommend_queries 全部清空（原版只留 type=normal 的，猜你想搜仍在）
-^https://api\.zhihu\.com/search/recommend_query/v\d\? response-body-json-jq '.recommend_queries.queries = []'
+# 猜你想搜：改——直接拒绝请求，整块不渲染（原版只留 type=normal 的；只清空数据会留标题和占位条）
+^https://api\.zhihu\.com/search/recommend_query/v\d\? reject
 # 搜索页挂件（原版）
 ^https://api\.zhihu\.com/search_v\d\? response-body-json-jq 'delpaths([[\"pendant\"]])'
 # 搜索 tabs 白名单（原版）
@@ -44,8 +44,8 @@
 # 我的页面精简（原版）
 ^https://api\.zhihu\.com/people/self$ response-body-json-jq 'delpaths([[\"vip_info\",\"entrance_new\",\"right_button\"]])'
 ^https://api\.zhihu\.com/people/self$ response-body-json-jq 'delpaths([[\"vip_info\",\"entrance_v2\"]])'
-# 新增：大家都在搜——hot_search 直接空返回
-^https://api\.zhihu\.com/search/hot_search reject-dict
+# 新增：大家都在搜——直接拒绝请求，整块不渲染（只空返回 {} 会留标题和占位条）
+^https://api\.zhihu\.com/search/hot_search reject
 # 以下为空返回类（原版 Map Local 的 {}，Loon 用 reject-dict）
 ^https://api\.zhihu\.com/ad-style-service/request$ reject-dict
 ^https://api\.zhihu\.com/commercial_api/ reject-dict
