@@ -64,16 +64,47 @@ if (url.indexOf("/api/cloud/zhihu/config/all") !== -1) {
     var cardType = it && (it.card_type || it.cardType || (it.extra && it.extra.type) || "");
     console.log("[ZHDIAG] #" + idx + " type=" + (it && it.type) + " card_type=" + cardType + " keys=[" + keys + "] markers=[" + hits.join(",") + "]" + extra);
   });
-  if (obj && Array.isArray(obj.data)) {
-    obj.data = obj.data.filter(function (i) { return i && i.type === "ComponentCard"; });
-    obj.data.forEach(function (i) {
-      // 与 jq 的 |= 语义一致：children 缺失时补 null，数组时去掉 id=ring 的元素
-      if (!("children" in i)) {
-        i.children = null;
-      } else if (Array.isArray(i.children)) {
-        i.children = i.children.filter(function (c) { return !c || c.id !== "ring"; });
-      }
-    });
-  }
+  if (obj && Array.isArray(obj.dataV1)) { obj.dataV1 = zhihuFilterList(obj.dataV1, "dataV1"); }
+  if (obj && Array.isArray(obj.data)) { obj.data = zhihuFilterList(obj.data, "data"); }
   $done({ body: JSON.stringify(obj) });
+}
+
+// 显式广告标记才判定为广告（宁可漏杀、不错杀）：id=ad、type=613、强插原因、
+// 强制插入、内部横幅、is_ad、ad_type、promotion_extra、上报字段含 gdt/advert。
+function zhihuIsAd(it) {
+  if (!it || typeof it !== "object") return false;
+  if (it.id === "ad") return true;
+  if (it.type === 613 || it.type === "613") return true;
+  var reason = it.reason || it.ad_reason || it.adReason || "";
+  if (typeof reason === "string" && reason.indexOf("强插") !== -1) return true;
+  if (it.is_force_insert === true || it.force_insert === true) return true;
+  if (it.internalbanner === true) return true;
+  if (it.is_ad === true) return true;
+  if (it.ad_type || it.adType) return true;
+  if (it.promotion_extra && typeof it.promotion_extra === "object" && Object.keys(it.promotion_extra).length) return true;
+  var rep = it.report || it.report_info || it.ad_report || it.adReport || "";
+  var repStr = typeof rep === "string" ? rep : "";
+  try { if (typeof rep !== "string") repStr = JSON.stringify(rep); } catch (e) { repStr = ""; }
+  if (/gdt|advert/i.test(repStr)) return true;
+  return false;
+}
+
+function zhihuFilterList(arr, name) {
+  var dropped = 0;
+  var kept = arr.filter(function (i) {
+    if (!i || typeof i !== "object") { dropped++; return false; }
+    if (i.type !== "ComponentCard") { dropped++; return false; }
+    if (zhihuIsAd(i)) { dropped++; return false; }
+    return true;
+  });
+  kept.forEach(function (i) {
+    // 与 jq 的 |= 语义一致：children 缺失时补 null，数组时去掉 id=ring 与广告子项
+    if (!("children" in i)) {
+      i.children = null;
+    } else if (Array.isArray(i.children)) {
+      i.children = i.children.filter(function (c) { return (!c || typeof c !== "object") ? true : (c.id !== "ring" && !zhihuIsAd(c)); });
+    }
+  });
+  console.log("[ZHDIAG] " + name + " kept=" + kept.length + " dropped=" + dropped);
+  return kept;
 }
