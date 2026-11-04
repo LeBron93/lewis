@@ -1,0 +1,12 @@
+#!name = 虎扑开屏不白屏
+#!desc = goblin 开屏广告 mock 空广告，避免 REJECT 干等
+# 2026-11-04 Berlin 提供；按 Loon 新版 Rewrite 语法修正：mock 的 body 须为反引号包裹的字符串，原文裸对象写法无法解析。
+
+[Rule]
+DOMAIN-SUFFIX,goblin.hupu.com,DIRECT
+
+[Rewrite]
+response if ${url} ~= /^https?:\/\/goblin\.hupu\.com\/\d+\/[\d.]+\/interfaceAd\/getOther/ then response.body.mock("json", `{"ad_code":-41,"show_type":0,"ads":[]}`, 200)
+
+[MITM]
+hostname = goblin.hupu.com
