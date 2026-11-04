@@ -5,17 +5,11 @@
 # Loon 转换版：规则来自 UmetripAds.conf V1.0.3（2026-10-05）；脚本仅用 $request/$response/$done，Loon 无需改写；原脚本地址直访会跳转回站点首页，故脚本随插件一并存放于本仓库 Scripts/umetrip.ads.js（镜像副本，见脚本头注释）
 # 2026-11-04 Loon 原生重做版测试：脚本 Scripts/umetrip.loon-native.js（shengrui123 Loon 壳 + V1.0.3 清理逻辑 + JSON 文档分支，binary-body-mode=true，$done({body})，离线 14 项模拟测试通过），待真机验证；原版脚本 Scripts/umetrip.ads.js 保留未动，可回滚。
 
-# 2026-11-04 深层扫描修复：脚本改 4 层递归标题扫描 + 嵌套 tabs 收集（离线 13+7 项通过），专治民航官方直销/风景榜/首都机场出发排埋得深漏网；现版本已备份（Plugin-backups/umetrip-current-v20261104-7）。
-# 2026-11-04 QUIC 层恢复：QX 实测可去、Loon 不可，脚本/地址/逻辑三者已逐字核对无差别，剩余解释是部分请求走 QUIC（UDP）绕过 Loon 的 MITM——腾讯体育 v7 已证实同款机制；本层只影响传输层，脚本未动。
-# 2026-11-04 discardrp 拦截：wenbingkun 维护版（Umetrip.plugin，2026-10-07）比旧版多一条 (discardrp|startup) reject-200；先只拦 discardrp（疑似运营内容源），startup 仍走脚本清洗，免得启动配置被误杀；discardrp 加入 MITM。
-# 2026-11-04 追加 startup：单拦 discardrp 毫无效果，按维护版原样并入 startup（启动配置请求）；若首页加载异常立即回滚。
 [Rewrite]
-PROTOCOL,QUIC,REJECT
-^https?:\/\/(discardrp|startup)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ - reject-200
 ^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject
 
 [Script]
-http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.loon-native.js?v=20261104-8, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
+http-response ^https:\/\/(?:sns|appmsg|home|umehome|opactivity|activity|umerp|flightstatus|umeflightstatus|startup|umestartup|user|umeuser|event)\.umetrip\.com\/gateway\/api\/umetrip\/native(?:\?.*)?$ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/umetrip.loon-native.js?v=20261104-7, requires-body=true, binary-body-mode=true, tag=航旅纵横净化
 
 [MITM]
-hostname = discardrp.umetrip.com, sns.umetrip.com, appmsg.umetrip.com, home.umetrip.com, umehome.umetrip.com, opactivity.umetrip.com, activity.umetrip.com, umerp.umetrip.com, flightstatus.umetrip.com, umeflightstatus.umetrip.com, startup.umetrip.com, umestartup.umetrip.com, user.umetrip.com, umeuser.umetrip.com, event.umetrip.com, oss.umetrip.com
+hostname = sns.umetrip.com, appmsg.umetrip.com, home.umetrip.com, umehome.umetrip.com, opactivity.umetrip.com, activity.umetrip.com, umerp.umetrip.com, flightstatus.umetrip.com, umeflightstatus.umetrip.com, startup.umetrip.com, umestartup.umetrip.com, user.umetrip.com, umeuser.umetrip.com, event.umetrip.com, oss.umetrip.com
