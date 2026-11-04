@@ -65,3 +65,7 @@
 
 [MITM]
 hostname = m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com, zhida.zhihu.com
+
+[Script]
+# 临时诊断：只记录 topstory/recommend 每条的 type/字段/广告特征词，不改数据；拿到特征后删除
+http-response ^https:\/\/api\.zhihu\.com\/topstory\/recommend\? script-path = https://raw.githubusercontent.com/LeBron93/lewis/08ac18ad5860359118384daefd4bedb23c1751e2/Scripts/zhihu-feed-diag.js, requires-body = true, tag = 信息流结构诊断
