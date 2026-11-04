@@ -6,7 +6,10 @@
 # 本版相对原插件的改动（均标“改/新增”）：
 #  1. 顶部标签去掉 hot（热榜 tab 不再出现）；
 #  2. search/recommend_query 直接拒绝请求（“猜你想搜”整块不渲染；v1 曾只清空数据，结果只剩标题和占位条）；
-#  3. 新增 search/hot_search 直接拒绝请求（“大家都在搜”整块不渲染；v1 曾空返回 {}，结果只剩标题和占位条）与 topstory/hot-lists 空返回（热榜内容兜底）。
+#  4. [Rule] 拦截 QUIC：m-cloud 配置请求走 QUIC(UDP) 绕过 MITM，请求记录里脚本一项为 N/A、脚本从未跑到；强制走 TCP/TLS 才能解密（腾讯体育 v7 同款已验证有效的层）。
+
+[Rule]
+PROTOCOL,QUIC,REJECT
 
 [Rewrite]
 # m-cloud 配置的过滤已并入脚本（同一 URL 上 Response Body Rewrite 会禁用 Response Script，Loon 文档明文规定），此处不再配重写规则
