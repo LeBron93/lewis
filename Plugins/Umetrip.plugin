@@ -6,7 +6,9 @@
 # 2026-11-04 Loon 原生重做版测试：脚本 Scripts/umetrip.loon-native.js（shengrui123 Loon 壳 + V1.0.3 清理逻辑 + JSON 文档分支，binary-body-mode=true，$done({body})，离线 14 项模拟测试通过），待真机验证；原版脚本 Scripts/umetrip.ads.js 保留未动，可回滚。
 
 # 2026-11-04 深层扫描修复：脚本改 4 层递归标题扫描 + 嵌套 tabs 收集（离线 13+7 项通过），专治民航官方直销/风景榜/首都机场出发排埋得深漏网；现版本已备份（Plugin-backups/umetrip-current-v20261104-7）。
+# 2026-11-04 QUIC 层恢复：QX 实测可去、Loon 不可，脚本/地址/逻辑三者已逐字核对无差别，剩余解释是部分请求走 QUIC（UDP）绕过 Loon 的 MITM——腾讯体育 v7 已证实同款机制；本层只影响传输层，脚本未动。
 [Rewrite]
+PROTOCOL,QUIC,REJECT
 ^https:\/\/oss\.umetrip\.com\/fs\/advert\/ - reject
 
 [Script]
