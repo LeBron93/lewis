@@ -6,10 +6,10 @@
 # 本版相对原插件的改动（均标“改/新增”）：
 #  1. 顶部标签去掉 hot（热榜 tab 不再出现）；
 #  2. search/recommend_query 直接拒绝请求（“猜你想搜”整块不渲染；v1 曾只清空数据，结果只剩标题和占位条）；
-#  4. [Rule] 拦截 QUIC：m-cloud 配置请求走 QUIC(UDP) 绕过 MITM，请求记录里脚本一项为 N/A、脚本从未跑到；强制走 TCP/TLS 才能解密（腾讯体育 v7 同款已验证有效的层）。
+#  4. [Rule] 拦截 QUIC：只针对 zhihu.com（AND 组合写法，Loon 官方逻辑规则）：QUIC 走 UDP、MITM 无法解密，路径规则会在 QUIC 请求上静默失效；另：m-cloud 配置接口有两条路径（/api/cloud/zhihu/config/all 与 /api/cloud/config/all），脚本匹配已同时覆盖两条。
 
 [Rule]
-PROTOCOL,QUIC,REJECT
+AND,((DOMAIN-SUFFIX,zhihu.com),(PROTOCOL,QUIC)),REJECT
 
 [Rewrite]
 # m-cloud 配置的过滤已并入脚本（同一 URL 上 Response Body Rewrite 会禁用 Response Script，Loon 文档明文规定），此处不再配重写规则
@@ -69,6 +69,6 @@ hostname = m-cloud.zhihu.com, api.zhihu.com, www.zhihu.com, page-info.zhihu.com,
 [Script]
 # 过滤脚本（含临时诊断日志 [ZHDIAG]）：m-cloud 配置过滤 + 推荐信息流过滤，逻辑与原版 jq 一致；确认字段特征与配置开关后删除日志行
 # 1) 信息流：记录 topstory/recommend 每条的 type/字段/广告特征词
-http-response ^https:\/\/api\.zhihu\.com\/topstory\/recommend script-path = https://raw.githubusercontent.com/LeBron93/lewis/3aaf29770e37a04fc694f3a7a9f85716b7785859/Scripts/zhihu-filter.js, requires-body = true, tag = 信息流结构诊断
+http-response ^https:\/\/api\.zhihu\.com\/topstory\/recommend script-path = https://raw.githubusercontent.com/LeBron93/lewis/1e74b6a164e7f5f1f9514ebd52380cb175ab7d53/Scripts/zhihu-filter.js, requires-body = true, tag = 信息流结构诊断
 # 2) 配置：记录 m-cloud 全部 configKey，找控制搜索页模块的开关
-http-response ^https:\/\/m-cloud\.zhihu\.com\/api\/cloud\/zhihu\/config\/all script-path = https://raw.githubusercontent.com/LeBron93/lewis/3aaf29770e37a04fc694f3a7a9f85716b7785859/Scripts/zhihu-filter.js, requires-body = true, tag = 配置开关诊断
+http-response ^https:\/\/m-cloud\.zhihu\.com\/api\/cloud\/(?:zhihu\/)?config\/all script-path = https://raw.githubusercontent.com/LeBron93/lewis/1e74b6a164e7f5f1f9514ebd52380cb175ab7d53/Scripts/zhihu-filter.js, requires-body = true, tag = 配置开关诊断
