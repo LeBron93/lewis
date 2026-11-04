@@ -43,8 +43,13 @@ if (url.indexOf("/api/cloud/zhihu/config/all") !== -1) {
   $done({ body: JSON.stringify(obj) });
 } else {
   // ---- 推荐信息流：只留 ComponentCard，并去掉 children 里的 ring（对应原版两条 jq）----
-  var items = (obj && Array.isArray(obj.data)) ? obj.data : [];
-  console.log("[ZHDIAG] items=" + items.length + " keys=" + (obj && typeof obj === "object" ? Object.keys(obj).join(",") : "?"));
+  // 注意：本次请求体除 data 外还有 dataV1 字段，先记录两个字段的形态再决定过滤目标
+  var dataV1 = obj && obj.dataV1;
+  var dataField = obj && obj.data;
+  var list = Array.isArray(dataV1) ? dataV1 : (Array.isArray(dataField) ? dataField : []);
+  var listName = Array.isArray(dataV1) ? "dataV1" : "data";
+  console.log("[ZHDIAG] items=" + list.length + " from=" + listName + " keys=" + (obj && typeof obj === "object" ? Object.keys(obj).join(",") : "?") + " dataV1=" + (Array.isArray(dataV1) ? "array" + dataV1.length : typeof dataV1) + " data=" + (Array.isArray(dataField) ? "array" + dataField.length : typeof dataField));
+  var items = list;
   var MARKERS = ["广告", "推广", "promotion", "ad_info", "盐选", "feed_advert", "aggregation", "market_card", "business_type", "paid", "sponsored", "commercial"];
   items.slice(0, 20).forEach(function (it, idx) {
     var s = "";
