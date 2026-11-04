@@ -10,7 +10,7 @@ try {
   $done({});
 }
 
-if (url.indexOf("/api/cloud/zhihu/config/all") !== -1) {
+if (url.indexOf("/api/cloud/zhihu/config/all") !== -1 || url.indexOf("/api/cloud/config/all") !== -1) {
   // ---- 全局配置：去掉 HTTPDNS / QUIC 相关配置（对应原版 drop_keys jq）----
   var cfgs = (obj && obj.data && obj.data.configs) || [];
   console.log("[ZHDIAG] config keys=" + cfgs.length);
