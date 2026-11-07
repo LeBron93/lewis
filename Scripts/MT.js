@@ -87,6 +87,25 @@ function mtqxHotRecommend(obj) {
   return changed;
 }
 
+// DIAG 2026-11-07：hotrecommend 增加 console.log 结构诊断，不改过滤逻辑；拿到 pageName 后回滚。
+function mtqxDiagHot(obj) {
+  try {
+    const d = obj && obj.data;
+    const keys = d && mtqxIsObj(d) ? Object.keys(d) : [];
+    const segs = [];
+    if (d && Array.isArray(d.segmentsV2)) {
+      d.segmentsV2.forEach((s, i) => {
+        const names = Array.isArray(s && s.hotwordSegments)
+          ? s.hotwordSegments.map(h => (h && h.pageName) || "?").join(",")
+          : "(no hotwordSegments)";
+        const sk = s && mtqxIsObj(s) ? Object.keys(s).join(",") : "?";
+        segs.push("#" + i + " keys[" + sk + "] pageNames[" + names + "]");
+      });
+    }
+    console.log("[MT-diag] dataKeys[" + keys.join(",") + "] segs=" + segs.length + " " + segs.join(" | ").slice(0, 1500));
+  } catch (e) {}
+}
+
 function mtqxAiSkill(obj) {
   if (!mtqxIsObj(obj) || typeof obj.data !== "string") return false;
   const d = JSON.parse(obj.data);
@@ -130,7 +149,11 @@ function mtqxClearArea(root, key) {
     else if (/\/lycoris\/scene\//.test(mtqxUrl)) changed = mtqxFeed(obj);
     else if (/\/usercenter\/display/.test(mtqxUrl)) changed = mtqxMine(obj);
     else if (/\/searchpage\/defaultword/.test(mtqxUrl)) changed = mtqxDefaultWord(obj);
-    else if (/\/searchpage\/hotword\/city\/divide\/hotrecommend\//.test(mtqxUrl)) changed = mtqxHotRecommend(obj);
+    else if (/\/searchpage\/hotword\/city\/divide\/hotrecommend\//.test(mtqxUrl)) {
+      mtqxDiagHot(obj);
+      changed = mtqxHotRecommend(obj);
+      console.log("[MT-diag] hotrecommend changed=" + changed);
+    }
     else if (/\/assistant\/getAppClientHornConfig/.test(mtqxUrl)) changed = mtqxAiSkill(obj);
     else if (/\/mop\/entry\/shoppingCartEntry/.test(mtqxUrl)) changed = mtqxClearArea(obj, "topBannerArea");
     else if (/\/entryModule\/startupPicture/.test(mtqxUrl)) changed = mtqxClearArea(obj, "startupPicArea");
