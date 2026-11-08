@@ -1,6 +1,6 @@
 #!name = 美团App 12.67.403
 #!icon = https://raw.githubusercontent.com/LeBron93/lewis/main/Icons/meituan-icon.png
-#!desc = 美团 App 净化：去开屏、我的页交叉推荐、搜索热词与小喇叭配置等，屏蔽 httpdns 与广告域名。首页信息流定位中（诊断版）。
+#!desc = 美团 App 净化：去开屏、首页推荐流、我的页交叉推荐、搜索热词与小喇叭配置等，屏蔽 httpdns 与广告域名。
 #!author = TG@ZenMoFiShi
 #!homepage = https://raw.githubusercontent.com/ZenmoFeiShi/Qx/refs/heads/main/MT.snippet
 # Loon 转换版：规则与脚本均来自 MT.snippet，脚本 MT.js 仅用 $request/$response/$done，Loon 无需改写
@@ -59,7 +59,7 @@ IP6-CIDR,2402:4e00:40:40::2:373/128,REJECT
 
 [Script]
 http-response ^https?:\/\/apimobile\.meituan\.com\/aggroup\/indexTab script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MT.js, requires-body=true, tag=美团净化
-http-response ^https?:\/\/feedguess\.meituan\.com\/lycoris\/scene\/([A-Za-z0-9_]+)(\?|$) script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MT.js, requires-body=true, tag=美团净化
+http-response ^https?:\/\/feedguess\.meituan\.com\/lycoris\/scene\/(gwc_feed1_2265|personalcenter_2154)(\?|$) script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MT.js, requires-body=true, tag=美团净化
 http-response ^https?:\/\/mt-personalcenter\.meituan\.com\/usercenter\/display script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MT.js, requires-body=true, tag=美团净化
 http-response ^https?:\/\/apimobile\.meituan\.com\/group\/v1\/deal\/searchpage\/defaultword script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MT.js, requires-body=true, tag=美团净化
 http-response ^https?:\/\/apimobile\.meituan\.com\/group\/v1\/deal\/searchpage\/hotword\/city\/divide\/hotrecommend\/ script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/MT.js, requires-body=true, tag=美团净化
