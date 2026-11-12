@@ -1,0 +1,32 @@
+#!name=网络诊断雷达
+#!desc=定时诊断出口 IP / 纯净度 / 延迟 / QUIC / 流媒体 / AI 可用性，写入持久化快照并推送汇总通知。由 Surge 版移植。
+#!author=Berlin
+#!icon=https://is1-ssl.mzstatic.com/image/thumb/Purple221/v4/92/4e/35/924e359d-e682-7b80-372b-920fdb8c6d6c/AppIcon-0-0-1x_U007emarketing-0-8-0-85-220.png/512x512bb.jpg
+
+# ---------- 使用说明 ----------
+# 1. 安装本插件（Loon → 插件 → 添加插件，粘贴插件链接）。
+# 2. 首次运行：Loon → 脚本 → 点 radar-manual → 运行，确认通知正常。
+# 3. 参数写在 argument 里，用 & 连接：
+#      POLICY=机场策略组名   最高优先级，全部请求强制走该策略
+#      LMT=流媒体策略组名     流媒体专用（POLICY 为空时生效）
+#      AI=AI策略组名          AI 专用（POLICY 为空时生效）
+#      YS=1                  通知里 IP 打码
+#      XY=VLESS              手动指定协议（不填则从节点名推断）
+#      NOTIFY=0              关闭通知
+#      SYNC=https://xxx      把快照 POST 到你的 URL（KV / Worker / NAS）
+#      DEBUG=1               打印详细日志
+#
+# 注意：
+# - Loon 没有 Surge 的 wake-system 唤醒，定时任务依赖 Loon 在后台存活，
+#   锁屏久了可能跳过某次执行，属 Loon 平台限制。
+# - 脚本通过 $config.getConfig() / getSelectedPolicy() 读出站模式与当前节点；
+#   本地 IP / 网关 / DNS 在 Loon 脚本里取不到，快照里留空（小组件自测补）。
+# - 结果写入 $persistentStore 的 radar.snapshot.v1，结构为统一 JSON 快照，
+#   Scripting「网络诊断雷达」小组件可直接读取同一份结构（见 README）。
+
+[Script]
+# 每 15 分钟自动诊断一次
+cron "*/15 * * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar, timeout=60, argument="YS=0&NOTIFY=1", enable=true
+
+# 手动触发（Loon → 脚本 → 点 radar-manual → 运行）
+generic script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar-manual, timeout=60, argument="YS=0&NOTIFY=1&DEBUG=1"
