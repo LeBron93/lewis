@@ -25,8 +25,8 @@
 #   Scripting「网络诊断雷达」小组件可直接读取同一份结构（见 README）。
 
 [Script]
-# 每 15 分钟自动诊断一次
-cron "*/15 * * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar, timeout=60, argument="YS=0&NOTIFY=1", enable=true
+# 每天早上 8 点自动诊断一次
+cron "0 8 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar, timeout=60, argument="YS=0&NOTIFY=1", enable=true
 
 # 手动触发（Loon → 脚本 → 点 radar-manual → 运行）
 generic script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar-manual, timeout=60, argument="YS=0&NOTIFY=1&DEBUG=1"

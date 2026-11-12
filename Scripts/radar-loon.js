@@ -16,7 +16,7 @@
  *
  * 用法（见 loon/网络诊断雷达.plugin）：
  *   [Script]
- *   cron "*\/15 * * * *" script-path=..., tag=radar, timeout=60, argument="YS=0&NOTIFY=1"
+ *   cron "0 8 * * *" script-path=..., tag=radar, timeout=60, argument="YS=0&NOTIFY=1"
  *   generic script-path=..., tag=radar-manual, timeout=60, argument="YS=0&NOTIFY=1&DEBUG=1"
  *
  * 手动跑：Loon → 脚本 → 点 radar-manual → 运行。
