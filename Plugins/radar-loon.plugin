@@ -13,7 +13,7 @@
 #      YS=1                  通知里 IP 打码
 #      XY=VLESS              手动指定协议（不填则从节点名推断）
 #      NOTIFY=0              关闭通知
-#      SYNC=https://xxx      把快照 POST 到你的 URL（KV / Worker / NAS）
+#      SYNC=https://radar-sync.870941878qq.workers.dev/radar  把快照 POST 到同步 Worker（已部署）
 #      DEBUG=1               打印详细日志
 #
 # 注意：
@@ -26,7 +26,7 @@
 
 [Script]
 # 每天早上 8 点自动诊断一次
-cron "0 8 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar, timeout=60, argument="YS=0&NOTIFY=1&AI=Ai", enable=true
+cron "0 8 * * *" script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar, timeout=60, argument="YS=0&NOTIFY=1&AI=Ai&SYNC=https://radar-sync.870941878qq.workers.dev/radar", enable=true
 
 # 手动触发（Loon → 脚本 → 点 radar-manual → 运行）
-generic script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar-manual, timeout=60, argument="YS=0&NOTIFY=1&DEBUG=1&AI=Ai"
+generic script-path=https://raw.githubusercontent.com/LeBron93/lewis/main/Scripts/radar-loon.js, tag=radar-manual, timeout=60, argument="YS=0&NOTIFY=1&DEBUG=1&AI=Ai&SYNC=https://radar-sync.870941878qq.workers.dev/radar"
