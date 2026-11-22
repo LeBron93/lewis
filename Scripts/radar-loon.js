@@ -127,10 +127,12 @@ const DNS_PROVIDERS = [
 
   const mediaPolicy = await resolveCategoryPolicy("media");
   const aiPolicy = await resolveCategoryPolicy("ai");
+  const mediaNode = selectedNodeOf(mediaPolicy);
+  const aiNode = selectedNodeOf(aiPolicy);
 
   const [media, ai] = await Promise.all([
-    runServices(MEDIA_SERVICES, mediaPolicy),
-    runServices(AI_SERVICES, aiPolicy)
+    runServices(MEDIA_SERVICES, mediaPolicy, mediaNode),
+    runServices(AI_SERVICES, aiPolicy, aiNode)
   ]);
 
   const carrier = localExit.carrier || "";
@@ -431,7 +433,7 @@ async function measureLatency(urls, policy) {
   return { ok: passed.length > 0, ms: passed.length ? passed[0].ms : 0 };
 }
 
-async function runServices(services, policy) {
+async function runServices(services, policy, node) {
   const results = await mapLimit(services, CONCURRENCY, async function (service) {
     const status = await getStatus(
       service.url + (service.url.indexOf("?") >= 0 ? "&" : "?") + "_=" + Date.now(),
@@ -443,11 +445,24 @@ async function runServices(services, policy) {
       id: service.id,
       name: service.name,
       ok: status >= 200 && status < 500,
-      policy: policy || ""
+      policy: policy || "",
+      node: node || ""
     };
   });
 
   return results;
+}
+
+/* 取某策略组当前选中的节点名（顺着组往下钻，钻不到返回 ""）。 */
+function selectedNodeOf(policy) {
+  if (!policy) return "";
+  const groups = listPolicyNames();
+  if (!groups.length) return "";
+  try {
+    return resolveLoonNode(policy, groups).node || "";
+  } catch (_) {
+    return "";
+  }
 }
 
 async function resolveCategoryPolicy(category) {
